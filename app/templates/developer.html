@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试需求</title>
+</head>
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+<script src="/static/jquery.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+<script src="/static/icheck.js"></script>
+<style>
+    title,a,button,li,p,#copyright,table {
+        font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
+        font-weight:bold;
+    }
+
+    h1,p,li,#copyright,caption {text-align: center;}
+
+    .navbar-brand {
+        animation: colorful 5s;
+        -webkit-animation: colorful 5s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-direction: alternate;}
+    @-webkit-keyframes colorful {
+        0% { color: #c00; }
+        50% { color: orange; }
+        100% { color: yellowgreen; }
+    }
+
+    .navbar-collapse {margin-top: 9px;}
+
+    .navbar-collapse > a {font-size: 16px;}
+
+    nav {margin-bottom: 20px;}
+
+    hr {width: 55%;}
+    p {color: #1fa67a;font-size: 12px;}
+</style>
+<body>
+<!--这边可以通过jinja2模板继承重用-->
+<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!--无论折叠与否都显示-->
+        <a href="" class="navbar-brand" id="brand">技术部走行报表系统</a>
+    </div>
+    <!--折叠数据-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
+        <a href="" class="btn">test1</a>|
+        <a href="" class="btn">test2</a>|
+        <a href="" class="btn">test3</a>
+    </div>
+</nav>
+<!--重用结束-->
+<div class="container">
+    <!--面板-->
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#current" data-toggle="tab">当前测试需求</a>
+        </li>
+        <li>
+            <a href="#history" data-toggle="tab">历史表单记录</a>
+        </li>
+    </ul>
+    <!--面板数据-->
+    <div class="tab-content">
+        <!--current-->
+        <div id="current" class="tab-pane active fade in">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <caption>轮胎委托试验单</caption>
+                    <tr>
+                        <td>试验目的</td>
+                        <td colspan="3">
+                            <div class="form-group">
+                                <label for="">试验目的</label>
+                                <input type="text" class="form-control" required name="purpose">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>标称尺度</td>
+
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control" required name="size">
+                            </div>
+                        </td>
+                        <td>委托编号</td>
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control" required name="request_id">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>商标/花纹</td>
+
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control" required name="pattern">
+                            </div>
+                        </td>
+                        <td>温度等级</td>
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control" required name="temp">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!--history-->
+        <div id="history" class="tab-pane fade in">
+            <p>b</p>
+        </div>
+    </div>
+</div>
+<footer class="nav navbar-fixed-bottom">
+    <hr>
+    <p>&copy; Copyright 2016 Sheldon Chen</p>
+</footer>
+</body>
+</html>

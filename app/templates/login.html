@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="Chrome=1,IE=Edge;IE=11;IE=10;IE=9"/>
+    <title>Log In</title>
+</head>
+<link rel="stylesheet" href="../static/bootstrap.min.css">
+<script src="../static/jquery.min.js"></script>
+<script src="../static/bootstrap.min.js"></script>
+
+<style>
+    .container {margin-top: 200px;}
+    body {background-color: #dddddd;}
+    .messages {color: red;font-style: oblique}
+    p {font-size: 9px;color: #1fa67a}
+</style>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="login-panel panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please Sign In</h3>
+                </div>
+                <div class="panel-body">
+                    <form role="form" method="post">
+                    <input type="hidden" name="_crsf_token" value="{{ crsf_token() }}">
+                    <input type="hidden" value="{{ next or '' }}" name="next">
+                        <fieldset>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Name" name="usr"
+                                       autofocus required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Password" name="pwd"
+                                       type="password" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                            <div class="messages">
+                                {% for messages in get_flashed_messages()%}
+                                {{ messages }}
+                                {% endfor %}
+                            </div>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input name="remember" type="checkbox" value="Remember Me">Remember Me
+                                </label>
+                            </div>
+                            <input type="submit" class="btn btn-success btn-block" value="Login">
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar-fixed-bottom">
+    <div class="container-fluid">
+        <p>ALL RIGHTS RESERVED &copy; 2016 SHELDON CHEN</p>
+    </div>
+</nav>
+</body>
+</html>
