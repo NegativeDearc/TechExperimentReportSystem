@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 import os
-from app import app
-from app.models.dbModels import usrPwd
+from app import app, db
+from app.models.dbModels import usrPwd, requestForms, testContent
 from app.ext.login import login_required
 from urlparse import urlparse, urljoin
 from flask import request, session, abort, render_template, redirect, flash, url_for
-
+from uuid import uuid1
 
 
 def csrf_protect():
@@ -55,6 +55,7 @@ def login():
         usr = usrPwd.query.filter_by(user=request.form.get('usr')).first()
         if usr is not None and usr.verify_pwd(request.form.get('pwd')):
             session['is_active'] = True
+            session['usr'] = request.form.get('usr')
             return redirect(next)
         else:
             flash('Wrong User Name or Password')
@@ -66,9 +67,10 @@ def developer():
     if not session.get('is_active'):
         return redirect(url_for('login'),code=401)
     if request.method == 'POST':
-        print request.form
-        print request.form.getlist('highspeed')
-        print request.form.getlist('endurance')
+        session['uuid_id'] = str(uuid1())
+        requestForms(request.form,session).add_data()
+        testContent().add_data(request.form,session)
+        return redirect(url_for('developer'))
     return render_template('developer.html')
 
 
