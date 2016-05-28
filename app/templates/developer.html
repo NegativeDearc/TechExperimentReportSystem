@@ -7,7 +7,13 @@
 <link rel="stylesheet" href="/static/bootstrap.min.css">
 <script src="/static/jquery.min.js"></script>
 <script src="/static/bootstrap.min.js"></script>
-<script src="/static/icheck.js"></script>
+
+<!--icheck-->
+<script src="/static/icheck-1.x/icheck.js"></script>
+<link rel="stylesheet" href="/static/icheck-1.x/skins/line/blue.css">
+<!--multiselect-->
+<script src="/static/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="/static/bootstrap-multiselect/bootstrap-multiselect.css">
 <style>
     title,a,button,li,p,#copyright,table {
         font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
@@ -35,6 +41,11 @@
 
     hr {width: 55%;}
     p {color: #1fa67a;font-size: 12px;}
+
+    table {margin-top: 30px}
+    table tr td {text-align: center;vertical-align: middle!important;}
+    table input {vertical-align: middle!important;}
+    table #today,#proposer{text-align: center;}
 </style>
 <body>
 <!--这边可以通过jinja2模板继承重用-->
@@ -71,50 +82,110 @@
     <div class="tab-content">
         <!--current-->
         <div id="current" class="tab-pane active fade in">
-            <div class="table-responsive">
+            <form action="" method="post">
+                <div class="table-responsive">
                 <table class="table table-bordered">
                     <caption>轮胎委托试验单</caption>
                     <tr>
+                        <td colspan="4" class="warning">基本信息</td>
+                    </tr>
+                    <tr>
                         <td>试验目的</td>
-                        <td colspan="3">
-                            <div class="form-group">
-                                <label for="">试验目的</label>
-                                <input type="text" class="form-control" required name="purpose">
-                            </div>
+                        <td>
+                            <input type="text" class="form-control" required name="purpose">
                         </td>
+                        <td>日期</td>
+                        <td><input type="text" readonly class="form-control" name="date" id="today"></td>
                     </tr>
                     <tr>
                         <td>标称尺度</td>
 
                         <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control" required name="size">
-                            </div>
+                            <input type="text" class="form-control" required name="size">
                         </td>
                         <td>委托编号</td>
                         <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control" required name="request_id">
-                            </div>
+                            <input type="text" class="form-control" required name="request_id">
                         </td>
                     </tr>
                     <tr>
                         <td>商标/花纹</td>
-
                         <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control" required name="pattern">
-                            </div>
+                            <input type="text" class="form-control" required name="pattern">
                         </td>
                         <td>温度等级</td>
                         <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control" required name="temp">
-                            </div>
+                            <input type="text" class="form-control" required name="temp">
                         </td>
+                    </tr>
+                    <tr>
+                        <td>最大荷重</td>
+                        <td>
+                            <input type="number" class="form-control" min="100" required name="max_load">
+                        </td>
+                        <td>最大充气压力</td>
+                        <td>
+                            <input type="number" class="form-control" min="100" required name="max_inflate">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="warning">静态性能</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="dim">
+                            <label for="dim">尺寸</label>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="unseat">
+                            <label for="unseat">脱圈阻力</label>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="plunger">
+                            <label for="plunger">破坏能</label>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="footprint">
+                            <label for="footprint">胎面接地图</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="warning">动态性能</td>
+                    </tr>
+                    <tr>
+                        <td>耐久性能</td>
+                        <td colspan="3">
+                            <select name="endurance" id="endurance" multiple="multiple">
+                                <option value="a">a</option>
+                                <option value="b">b</option>
+                                <option value="c">c</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>高速性能</td>
+                        <td colspan="3">
+                            <select name="highspeed" id="highspeed" multiple="multiple">
+                                <option value="d">d</option>
+                                <option value="e">e</option>
+                                <option value="f">f</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">备注</td>
+                        <td rowspan="2"><input type="text" class="form-control"></td>
+                        <td>核定</td>
+                        <td>申请人</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="text" class="form-control" value="test" name="proposer" id="proposer" readonly></td>
                     </tr>
                 </table>
             </div>
+                <input type="submit" class="btn btn-success">
+            </form>
         </div>
         <!--history-->
         <div id="history" class="tab-pane fade in">
@@ -122,9 +193,38 @@
         </div>
     </div>
 </div>
-<footer class="nav navbar-fixed-bottom">
+<footer class="nav">
     <hr>
     <p>&copy; Copyright 2016 Sheldon Chen</p>
 </footer>
+<script>
+    //icheck 组件初始化
+    $(document).ready(function(){
+      $('input').each(function(){
+        var self = $(this),
+          label = self.next(),
+          label_text = label.text();
+
+        label.remove();
+        self.iCheck({
+          checkboxClass: 'icheckbox_line-blue',
+          radioClass: 'iradio_line-blue',
+          insert: '<div class="icheck_line-icon"></div>' + label_text
+        });
+      });
+    });
+    //当前日期
+    $(function(){
+        d = new Date();
+        date = d.getFullYear() + '/' + d.getMonth() + '/' + d.getDay()
+        $("#today").attr('value',date);
+    });
+    //下拉多选
+    $(document).ready(function(){
+        $("#endurance,#highspeed").multiselect({
+            buttonWidth:'500px'
+        });
+    });
+</script>
 </body>
 </html>

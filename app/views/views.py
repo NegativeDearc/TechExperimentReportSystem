@@ -2,8 +2,9 @@
 import os
 from app import app
 from app.models.dbModels import usrPwd
+from app.ext.login import login_required
 from urlparse import urlparse, urljoin
-from flask import request, session, abort, render_template, redirect, flash
+from flask import request, session, abort, render_template, redirect, flash, url_for
 
 
 
@@ -60,8 +61,14 @@ def login():
     return render_template('login.html', next=next)
 
 
-@app.route('/developer')
+@app.route('/developer',methods=['GET','POST'])
 def developer():
+    if not session.get('is_active'):
+        return redirect(url_for('login'),code=401)
+    if request.method == 'POST':
+        print request.form
+        print request.form.getlist('highspeed')
+        print request.form.getlist('endurance')
     return render_template('developer.html')
 
 
