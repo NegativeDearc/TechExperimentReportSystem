@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 from app import app, db
-from app.models.dbModels import usrPwd, requestForms, testContent
+from app.models.dbModels import usrPwd, requestForms, testContent, requestDetail
 from app.ext.login import login_required
 from urlparse import urlparse, urljoin
 from flask import request, session, abort, render_template, redirect, flash, url_for
@@ -66,12 +66,14 @@ def login():
 def developer():
     if not session.get('is_active'):
         return redirect(url_for('login'),code=401)
+    res = requestDetail(session).summary()
     if request.method == 'POST':
         session['uuid_id'] = str(uuid1())
         requestForms(request.form,session).add_data()
         testContent().add_data(request.form,session)
+        #
         return redirect(url_for('developer'))
-    return render_template('developer.html')
+    return render_template('developer.html',res = res)
 
 
 @app.route('/tester')

@@ -46,6 +46,24 @@
     table tr td {text-align: center;vertical-align: middle!important;}
     table input {vertical-align: middle!important;}
     table #today,#proposer{text-align: center;}
+
+    .notice {
+        margin-top: 30px;width: auto;
+        text-align: center;box-shadow: 0 5px 5px #666666;
+        margin-left: auto;margin-right: auto;
+    }
+    .notice-header {
+        height: 25px;
+        line-height:25px;
+        overflow: hidden;
+        background-color:green;
+        font-size: 14px;
+        color: white;
+    }
+
+    .progress {width: 70%;margin-left: auto;margin-right: auto;margin-bottom: 20px}
+    .progress-bar {min-width: 2em;}
+    pre {font-size: 10px;background:none;text-align: center;border: none;}
 </style>
 <body>
 <!--这边可以通过jinja2模板继承重用-->
@@ -180,7 +198,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><input type="text" class="form-control" value="test" name="proposer" id="proposer" readonly></td>
+                        <td><input type="text" class="form-control" value="{{ session.get('usr') }}" name="proposer" id="proposer" readonly></td>
                     </tr>
                 </table>
             </div>
@@ -189,10 +207,26 @@
         </div>
         <!--history-->
         <div id="history" class="tab-pane fade in">
-            <p>b</p>
+            <!--通知组件-->
+        {% if res %}
+            {% for i in res %}
+            <div class="notice">
+                <!--头部-->
+                <div class="notice-header">Request编号:{{ i }}</div>
+                <!--正文-->
+                <div class="notice-content">
+                    <pre>{{ res.get(i) }}</pre>
+                </div>
+                <!--脚部-->
+                <div class="notice-footer">
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
         </div>
     </div>
 </div>
+
 <footer class="nav">
     <hr>
     <p>&copy; Copyright 2016 Sheldon Chen</p>
@@ -216,7 +250,7 @@
     //当前日期
     $(function(){
         d = new Date();
-        date = d.getFullYear() + '/' + d.getMonth() + '/' + d.getDay()
+        date = d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate();
         $("#today").attr('value',date);
     });
     //下拉多选

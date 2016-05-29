@@ -4,6 +4,8 @@ __author__ = 'SXChen'
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
+from collections import OrderedDict
+from prettytable import PrettyTable
 
 import datetime
 
@@ -161,3 +163,61 @@ class testContent(db.Model):
         # 提交,切记:try-except块会隐藏问题,如果有不明的的错误,在debug时打印Expection明细
         db.session.commit()
         db.session.close()
+
+
+
+class requestDetail(object):
+    '''
+    已经提出需求的明细,以人名筛选,progress达到100%后停止显示
+    '''
+
+    def __init__(self,session):
+        self.name = session.get('usr')
+
+        if self.name is None:
+            raise Exception('''Request name can't be none.''')
+
+    def summary(self):
+        # 获取正在进行任务的唯一编号
+        uid = db.session.query(requestForms.req_num).\
+            filter(requestForms.name == self.name,
+                   requestForms.check == False).\
+            all()
+
+        res = OrderedDict()
+        for i in uid:
+            tb = PrettyTable(field_names=[
+                'Request id',
+                'uuid',
+                'User',
+                'Request Date',
+                'Max load',
+                'Max Inflate',
+                'Temperature',
+                'Test item',
+                'Test type',
+                'Tested?'
+            ])
+
+            detail = db.session.query(requestForms,testContent).\
+                outerjoin(testContent,requestForms.req_num == testContent.req_num).\
+                filter(requestForms.req_num == i.req_num).\
+                all()
+
+            for v in detail:
+                tb.add_row([
+                    v.requestForms.req_num,
+                    v.requestForms.uuid,
+                    v.requestForms.name,
+                    v.requestForms.date,
+                    v.requestForms.load,
+                    v.requestForms.inflate,
+                    v.requestForms.temp,
+                    v.testContent.test_content,
+                    v.testContent.test_type,
+                    v.testContent.if_test
+                ])
+            res.update({
+                i.req_num:tb
+            })
+        return res
