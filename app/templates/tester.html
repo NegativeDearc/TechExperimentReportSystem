@@ -2,9 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>处理测试</title>
 </head>
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+<script src="/static/jquery.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+
+<style>
+    title,button,a {
+        font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
+        font-weight:bold;
+    }
+
+    .navbar-brand {
+        animation: colorful 5s;
+        -webkit-animation: colorful 5s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-direction: alternate;}
+    @-webkit-keyframes colorful {
+        0% { color: #c00; }
+        50% { color: orange; }
+        100% { color: yellowgreen; }
+    }
+
+    .navbar-collapse {margin-top: 9px;}
+
+    .navbar-collapse > a {font-size: 16px;}
+
+    nav {margin-bottom: 20px;}
+</style>
 <body>
+<!--这边可以通过jinja2模板继承重用-->
+<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!--无论折叠与否都显示-->
+        <a class="navbar-brand" id="brand">技术部走行报表系统</a>
+    </div>
+    <!--折叠数据-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
+        <a href="" class="btn">test1</a>|
+        <a href="" class="btn">test2</a>|
+        <a href="" class="btn">test3</a>
+    </div>
+</nav>
+<!--重用结束-->
 
 </body>
 </html>

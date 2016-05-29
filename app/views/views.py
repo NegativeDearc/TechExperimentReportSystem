@@ -78,4 +78,4 @@ def developer():
 
 @app.route('/tester')
 def tester():
-    return 'OK'
+    return render_template('tester.html')
