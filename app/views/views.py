@@ -1,12 +1,14 @@
 # -*- coding:utf-8 -*-
 import os
 from app import app, db
-from app.models.dbModels import usrPwd, requestForms, testContent, requestDetail
+from app.models.dbModels import usrPwd, requestForms, testContent, requestDetail, Highspeed
+from app.ext.allowed_upload_file import allow_file
+from app.ext.formatted_dict import formatted_dict
 from app.ext.login import login_required
 from urlparse import urlparse, urljoin
-from flask import request, session, abort, render_template, redirect, flash, url_for
+from flask import request, session, abort, render_template, \
+    redirect, flash, url_for, send_from_directory, jsonify
 from uuid import uuid1
-
 
 def csrf_protect():
     if request.method == 'POST':
@@ -50,8 +52,6 @@ def login():
 
     next = get_redirect_target()
     if request.method == 'POST':
-        # 如果查询到用户则返回app.Models.dbModels.usrPwd类,可调用该类的方法
-        # 注意这边使用user = request.form.get('usr')还是使用user == request.form.get('usr'),为什么?
         usr = usrPwd.query.filter_by(user=request.form.get('usr')).first()
         if usr is not None and usr.verify_pwd(request.form.get('pwd')):
             session['is_active'] = True
@@ -68,14 +68,40 @@ def developer():
         return redirect(url_for('login'),code=401)
     res = requestDetail(session).summary()
     if request.method == 'POST':
+        print request.form
+        print request.form.getlist('endurance')
+        print request.form.getlist('endurance_quantity')
         session['uuid_id'] = str(uuid1())
         requestForms(request.form,session).add_data()
         testContent().add_data(request.form,session)
         #
         return redirect(url_for('developer'))
-    return render_template('developer.html',res = res)
+    return render_template('developer.html',res=res)
 
 
 @app.route('/tester')
 def tester():
     return render_template('tester.html')
+
+
+@app.route('/maintain',methods=['GET','POST'])
+def maintain():
+    if request.method == 'POST':
+        print request.form
+        db.session.add(Highspeed(formatted_dict(request.form)))
+        db.session.commit()
+        return redirect(url_for('maintain'))
+    return render_template('maintain.html')
+
+
+@app.route('/download/files/<path:filename>')
+def download_file(filename):
+    return send_from_directory(directory=app.config['TEST_TEMPLATE_FILES'],
+                               filename=filename,
+                               as_attachment=True)
+
+
+@app.route('/api/v1.0/highspeed/')
+def test():
+    df = db.session.query(Highspeed.ref,Highspeed.speed_level).all()
+    return jsonify(df)

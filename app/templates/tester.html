@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="Chrome=1,IE=Edge;IE=11;IE=10;IE=9"/>
     <title>处理测试</title>
 </head>
 <link rel="stylesheet" href="/static/bootstrap.min.css">
@@ -46,7 +48,7 @@
     </div>
     <!--折叠数据-->
     <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
-        <a href="" class="btn">test1</a>|
+        <a href="{{ url_for('maintain') }}" class="btn">数据库维护</a>|
         <a href="" class="btn">test2</a>|
         <a href="" class="btn">test3</a>
     </div>

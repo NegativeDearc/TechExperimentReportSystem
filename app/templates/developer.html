@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="Chrome=1,IE=Edge;IE=11;IE=10;IE=9"/>
     <title>测试需求</title>
-</head>
-<link rel="stylesheet" href="/static/bootstrap.min.css">
-<script src="/static/jquery.min.js"></script>
-<script src="/static/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <script src="/static/jquery.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
 
-<!--icheck-->
-<script src="/static/icheck-1.x/icheck.js"></script>
-<link rel="stylesheet" href="/static/icheck-1.x/skins/line/blue.css">
-<!--multiselect-->
-<script src="/static/bootstrap-multiselect/bootstrap-multiselect.js"></script>
-<link rel="stylesheet" href="/static/bootstrap-multiselect/bootstrap-multiselect.css">
+    <!--icheck-->
+    <script src="/static/icheck-1.x/icheck.js"></script>
+    <link rel="stylesheet" href="/static/icheck-1.x/skins/line/blue.css">
+    <!--select2-->
+    <link rel="stylesheet" href="/static/select2/dist/css/select2.css">
+    <script src="/static/select2/dist/js/select2.js"></script>
+</head>
 <style>
     title,a,button,li,p,#copyright,table {
         font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
@@ -64,6 +66,7 @@
     .progress {width: 70%;margin-left: auto;margin-right: auto;margin-bottom: 20px}
     .progress-bar {min-width: 2em;}
     pre {font-size: 10px;background:none;text-align: center;border: none;}
+    .select-form {width: 100%;}
 </style>
 <body>
 <!--这边可以通过jinja2模板继承重用-->
@@ -172,23 +175,29 @@
                     </tr>
                     <tr>
                         <td>耐久性能</td>
-                        <td colspan="3">
-                            <select name="endurance" id="endurance" multiple="multiple">
-                                <option value="a">a</option>
-                                <option value="b">b</option>
-                                <option value="c">c</option>
+                        <td>
+                            <select name="endurance" id="endurance"  multiple="multiple" class="select-form form-control">
+                                <optgroup label="test1">
+                                    <option value="a">a</option>
+                                    <option value="b">b</option>
+                                    <option value="c">c</option>
+                                </optgroup>
+                            </select>
+                        </td>
+                        <td>数量</td>
+                        <td>
+                            <select name="endurance_quantity" id="endurance_quantity" class="select-form form-control" multiple="multiple">
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td>高速性能</td>
-                        <td colspan="3">
-                            <select name="highspeed" id="highspeed" multiple="multiple">
-                                <option value="d">d</option>
-                                <option value="e">e</option>
-                                <option value="f">f</option>
+                        <td>
+                            <select name="highspeed" id="highspeed" class="select-form form-control" multiple="multiple">
                             </select>
                         </td>
+                        <td>数量</td>
+                        <td><input type="number" min="0" name="highspeed_quantity" class="form-control"></td>
                     </tr>
                     <tr>
                         <td rowspan="2">备注</td>
@@ -232,6 +241,26 @@
     <p>&copy; Copyright 2016 Sheldon Chen</p>
 </footer>
 <script>
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    //ajax下拉 for highspeed
+    $.ajax({
+            url:$SCRIPT_ROOT + 'api/v1.0/highspeed/', //url地址
+            data:{'ref':'level'},                     //指定数据类型
+            contentType: "application/json",
+            dataType:'json',
+            success: function (data) {
+                console.log(data);
+                $.each(data,function(ref,level){      //必须要带参数
+                    $('#highspeed').append(
+                            '<option value="' + ref +'">' +
+                            ref+'('+level+')'+'</option>'
+                    )
+                });
+            },
+            error:function(msg){
+                alert('连接数据库错误!');
+            }
+    });
     //icheck 组件初始化
     $(document).ready(function(){
       $('input').each(function(){
@@ -255,8 +284,21 @@
     });
     //下拉多选
     $(document).ready(function(){
-        $("#endurance,#highspeed").multiselect({
-            buttonWidth:'500px'
+        $("#endurance").select2({
+            placeholder:'选择耐久测试条件'
+        });
+    });
+    $(document).ready(function(){
+        $("#endurance_quantity").select2({
+            placeholder:'选择测试条数,输入数字并回车',
+            tags:true,
+            tokenSeparators:[',','']
+        });
+    });
+    $(document).ready(function(){
+        $("#highspeed").select2({
+            placeholder:'选择高速测试条件',
+            maximumSelectionLength: 1
         });
     });
 </script>
