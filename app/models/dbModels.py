@@ -4,9 +4,7 @@ __author__ = 'SXChen'
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
-from collections import OrderedDict
-from prettytable import PrettyTable
-from collections import OrderedDict
+from cPickle import dumps, loads
 
 import datetime
 
@@ -171,67 +169,6 @@ class testContent(db.Model):
         db.session.close()
 
 
-
-class requestDetail(object):
-    '''
-    已经提出需求的明细,以人名筛选,progress达到100%后停止显示
-    '''
-
-    def __init__(self,session):
-        self.name = session.get('usr')
-
-        if self.name is None:
-            raise Exception('''Request name can't be none.''')
-
-    def summary(self):
-        # 获取正在进行任务的唯一编号
-        uid = db.session.query(requestForms.req_num).\
-            filter(requestForms.name == self.name,
-                   requestForms.check == False).\
-            all()
-
-        res = OrderedDict()
-        for i in uid:
-            tb = PrettyTable(field_names=[
-                'Request id',
-                'uuid',
-                'User',
-                'Request Date',
-                'Max load',
-                'Max Inflate',
-                'Temperature',
-                'Test item',
-                'Test type',
-                'Quantity',
-                'Tested?'
-            ])
-
-            detail = db.session.query(requestForms,testContent).\
-                outerjoin(testContent,requestForms.req_num == testContent.req_num).\
-                filter(requestForms.req_num == i.req_num).\
-                all()
-
-            for v in detail:
-                tb.add_row([
-                    v.requestForms.req_num,
-                    v.requestForms.uuid,
-                    v.requestForms.name,
-                    v.requestForms.date,
-                    v.requestForms.load,
-                    v.requestForms.inflate,
-                    v.requestForms.temp,
-                    v.testContent.test_content,
-                    v.testContent.test_type,
-                    v.testContent.test_quantity,
-                    v.testContent.if_test
-                ])
-            res.update({
-                i.req_num:tb
-            })
-        return res
-
-
-
 class Highspeed(db.Model):
     '''
     储存高速测试条件,
@@ -277,6 +214,7 @@ class Highspeed(db.Model):
     time_7       = db.Column(db.Integer)
     speed_7      = db.Column(db.Integer)
     mile_7       = db.Column(db.Float(3))
+    total_7      = db.Column(db.Float(3))
 
     time_8       = db.Column(db.Integer)
     speed_8      = db.Column(db.Integer)
@@ -302,7 +240,6 @@ class Highspeed(db.Model):
     speed_12      = db.Column(db.Integer)
     mile_12       = db.Column(db.Float(3))
     total_12      = db.Column(db.Float(3))
-    total_12     = db.Column(db.Float(3))
 
     time_13       = db.Column(db.Integer)
     speed_13      = db.Column(db.Integer)
@@ -416,3 +353,22 @@ class Highspeed(db.Model):
 #     '''
 #     __tablename__ = 'endurance_test'
 #     id            = db.Column(db.Integer,primary_key=True,nullable=False)
+
+class ReportDetail(db.Model):
+    '''
+    存储测试记录的表
+    =============
+    每次开发组用户提交了测试需求之后，本表自动生成一份记录,记录其uuid和测试数据已经测试名目，
+    其中test_data，存储pickle之后的json(dict)文件，uuid作为唯一标识符
+    '''
+    __tablename__ = 'reportDetail'
+
+    id           = db.Column(db.Integer,primary_key=True,nullable=False)
+    uuid         = db.Column(db.String(20),nullable=False)
+    test_content = db.Column(db.String(10),nullable=False,unique=True)
+    test_data    = db.Column(db.BLOB)
+
+    def __init__(self,uuid=None,test_content=None,test_data=None):
+        self.uuid         = uuid
+        self.test_content = test_content
+        self.test_data    = test_data

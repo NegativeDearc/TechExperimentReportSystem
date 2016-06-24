@@ -9,9 +9,11 @@
 <link rel="stylesheet" href="/static/bootstrap.min.css">
 <script src="/static/jquery.min.js"></script>
 <script src="/static/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/static/table-expandable/bootstrap-table-expandable.css">
+<script src="/static/table-expandable/bootstrap-table-expandable.js"></script>
 
 <style>
-    title,button,a {
+    title,button,a,.info {
         font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
         font-weight:bold;
     }
@@ -32,6 +34,8 @@
     .navbar-collapse > a {font-size: 16px;}
 
     nav {margin-bottom: 20px;}
+
+    table td{text-align: center;vertical-align: middle!important;}
 </style>
 <body>
 <!--这边可以通过jinja2模板继承重用-->
@@ -54,6 +58,38 @@
     </div>
 </nav>
 <!--重用结束-->
-
+<div class="container">
+    {% if data %}
+    <div class="table-responsive">
+    <table class="table">
+    {% for x in data %}
+        <tr class="info">
+        <td>项目编号</td>
+        <td>申请人</td>
+        <td>申请日期</td>
+        <td>实验目的</td>
+        <td>测试项目</td>
+        <td>所属类型</td>
+        <td>数量</td>
+        <td>是否已经测试？</td>
+        <td>动作按钮</td>
+        </tr>
+        {% for v in x.content %}
+            <tr>
+            <td>{{ x.id }}</td>
+            {% for vv in v[:-2] %}
+            <td>{{ vv }}</td>
+            {% endfor %}
+            <td style="display: none">{{ v[-1] }}</td>
+            <td>
+                <a class="btn btn-primary target-url" href="{{ v[-2] }}" target="_blank">前往处理</a>
+            </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+    </div>
+    {% endif %}
+</div>
 </body>
 </html>

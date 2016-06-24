@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="Chrome=1,IE=Edge;IE=11;IE=10;IE=9"/>
+    <title>测试--静态测试</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <script src="/static/jquery.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+
+    <script src="/static/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+</head>
+<style>
+    @page {
+        /*页面设置：a4 横幅*/
+        size: A4 portrait;
+        margin: 10px;
+    }
+
+    @media print {
+        html,body {
+            height: 297mm;
+            width: 210mm;
+            font-size: 10px;
+        }
+        /*隐藏不打印*/
+        background {none;}
+        nav {display: none;}
+        input.btn {display: none;}
+        /*细节调整*/
+        table,h3 {
+            text-align: center;
+            vertical-align: middle!important;
+            page-break-inside: avoid;
+            table-layout: fixed;
+        }
+        td {
+            text-align: center;
+            vertical-align: middle!important;
+            border: 1px solid black!important;
+        }
+        /*底部版权*/
+        #copyright > .container-fluid {text-align: center;}
+        #document_ref {text-align: right;margin-top: 10px;}
+    }
+
+    @media screen {
+        table,nav,h3{
+            font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
+        }
+        h3,input {text-align: center;}
+        table td {text-align: center;vertical-align: middle!important;}
+        table {table-layout: fixed;}
+        #document_ref {text-align: right;margin-top: 10px;}
+        .table1 tr:first-child > td {background-color: #5bc0de;color: whitesmoke;}
+        .navbar-brand {
+        animation: colorful 5s;
+        -webkit-animation: colorful 5s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-direction: alternate;}
+        @-webkit-keyframes colorful {
+            0% { color: #c00; }
+            50% { color: orange; }
+            100% { color: yellowgreen; }
+        }
+        .navbar-collapse {margin-top: 9px;}
+        .navbar-collapse > a {font-size: 16px;}
+        nav {margin-bottom: 20px;}
+        #copyright {display: none;}
+    }
+</style>
+<body>
+<!--这边可以通过jinja2模板继承重用-->
+<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!--无论折叠与否都显示-->
+        <a class="navbar-brand" id="brand">技术部走行报表系统</a>
+    </div>
+    <!--折叠数据-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
+        <a href="" class="btn">test1</a>|
+        <a href="" class="btn">test2</a>|
+        <a href="" class="btn">test3</a>
+    </div>
+</nav>
+<!--重用结束-->
+<div class="container">
+<h3>外胎静态性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
+    <form action="" method="post">
+        <div class="table-responsive">
+        <table class="table table-bordered table-condensed table1">
+            <tr>
+                <td colspan="6">基础信息</td>
+            </tr>
+            <tr>
+                <td>标称尺度<br><small>Size</small></td>
+                <td>{{ detail.get('size') }}</td>
+                <td>委托编号<br><small>Request Number</small></td>
+                <td>{{ detail.get('req_num') }}</td>
+                <td>实验目的<br><small>Purpose</small></td>
+                <td>{{ detail.get('purpose') }}</td>
+            </tr>
+            <tr>
+                <td>商标/花纹代码<br><small>Pattern</small></td>
+                <td>{{ detail.get('brand') }}</td>
+                <td>DOT码/加硫机号<br><small>DOT Num.</small></td>
+                <td id="dot_num">{{ data.get('dot_num') or '<input type="text" name="dot_num" class="form-control">'|safe }}</td>
+                <td>组装时间<br><small>Assembly Time</small></td>
+                <td id="assembly_time">{{ data.get('assembly_time') or '<input type="text" name="assembly_time" class="datetime form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>花纹代号<br>Design Num.</td>
+                <td id="pattern_code">{{ data.get('pattern_code') or'<input type="text" name="pattern_code" class="form-control">'|safe }}</td>
+                <td>周期牌号<br><small>Week Number</small></td>
+                <td id="dot_week">{{ data.get('dot_week') or'<input type="text" name="dot_week" class="form-control">'|safe }}</td>
+                <td>完成时间<br><small>Finish Date</small></td>
+                <td id="finish_time">{{ data.get('finish_time') or'<input type="text" class="datetime form-control" name="finish_time">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>模具号<br><small>Mold</small></td>
+                <td id="mold_num">{{ data.get('mold_num') or'<input type="text" name="mold_num" class="form-control">'|safe }}</td>
+                <td>加硫条码号<br><small>Barcode</small></td>
+                <td id="barcode">{{ data.get('barcode') or'<input type="text" name="barcode" class="form-control">'|safe }}</td>
+                <td>标准轮辋<br><small>Standard Rim</small></td>
+                <td id="rim_code">{{ data.get('rim_code') or'<input type="text" name="rim_code" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>胎面批号<br><small>Tread Run</small></td>
+                <td id="tread_num">{{ data.get('tread_num') or'<input type="text" name="tread_num" class="form-control">'|safe }}</td>
+                <td>最大荷重<br><small>Max Load</small></td>
+                <td>{{ detail.get('load') }}kg</td>
+                <td>最大风压<br><small>Max Pressure</small></td>
+                <td>{{ detail.get('inflate') }}kpa</td>
+            </tr>
+        </table>
+        {% if 'dim' in total %}
+            <table class="table table-bordered table-condensed table1">
+                <tr>
+                    <td colspan="11">尺寸测量</td>
+                </tr>
+                <tr>
+                    <td>测试风压<br>Pressure</td>
+                    <td colspan="2" id="dim_test_inflate">{{ data.get('dim_test_inflate') or'<input type="text" name="dim_test_inflate" class="form-control">'|safe }}</td>
+                    <td>测试轮辋<br>Rim</td>
+                    <td colspan="2" id="dim_test_rim_code">{{ data.get('dim_test_rim_code') or'<input type="text" name="dim_test_rim_code" class="form-control">'|safe }}</td>
+                    <td>测试时间<br>Time</td>
+                    <td colspan="2" id="dim_test_finish_time">
+                        {{ data.get('dim_test_finish_time') or'<input type="text" name="dim_test_finish_time" class="datetime form-control">'|safe }}
+                    </td>
+                    <td >技术员<br>Tech.</td>
+                    <td id="dim_test_operator">{{ data.get('dim_test_operator') or'<input type="text" name="dim_test_operator" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td>项目<br>Item</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>平均值<br>Avg.</td>
+                    <td>基准<br>SPEC</td>
+                    <td>判定<br>Judgement</td>
+                    <td>量具编号<br>Gauge</td>
+                </tr>
+                <tr>
+                    <td>重量<br>Weight</td>
+                    <td colspan="7" id="dim_test_tire_weight">{{ data.get('dim_test_tire_weight') or '<input type="text" name="dim_test_tire_weight" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_spec_weight">{{ data.get('dim_test_tire_spec_weight') or '<input type="text" name="dim_test_tire_spec_weight" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_weight_gauge">{{ data.get('dim_test_tire_weight_gauge') or '<input type="text" name="dim_test_tire_weight_gauge" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td>外径<br>Diameter</td>
+                    <td colspan="7" id="dim_test_tire_out_dia">{{ data.get('dim_test_tire_out_dia') or '<input type="text" name="dim_test_tire_out_dia" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_spec_dia">{{ data.get('dim_test_tire_spec_dia') or '<input type="text" name="dim_test_tire_spec_dia" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_dia_gauge">{{ data.get('dim_test_tire_dia_gauge') or '<input type="text" name="dim_test_tire_dia_gauge" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td>总宽<br>Overall Width</td>
+                    <td id="dim_test_tire_overall_width_1">{{ data.get('dim_test_tire_overall_width_1') or '<input type="text" name="dim_test_tire_overall_width_1" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_overall_width_2">{{ data.get('dim_test_tire_overall_width_2') or '<input type="text" name="dim_test_tire_overall_width_2" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_overall_width_3">{{ data.get('dim_test_tire_overall_width_3') or '<input type="text" name="dim_test_tire_overall_width_3" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_overall_width_4">{{ data.get('dim_test_tire_overall_width_4') or '<input type="text" name="dim_test_tire_overall_width_4" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_overall_width_5">{{ data.get('dim_test_tire_overall_width_5') or '<input type="text" name="dim_test_tire_overall_width_5" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_overall_width_6">{{ data.get('dim_test_tire_overall_width_6') or '<input type="text" name="dim_test_tire_overall_width_6" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_overall_width_spec">{{ data.get('dim_test_tire_overall_width_spec') or '<input type="text" name="dim_test_tire_overall_width_spec" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_overall_width_gauge">{{ data.get('dim_test_tire_overall_width_gauge') or '<input type="text" name="dim_test_tire_overall_width_gauge" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td>断宽<br>Section Width</td>
+                    <td id="dim_test_tire_section_width_1">{{ data.get('dim_test_tire_section_width_1') or '<input type="text" name="dim_test_tire_section_width_1" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_width_2">{{ data.get('dim_test_tire_section_width_2') or '<input type="text" name="dim_test_tire_section_width_2" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_width_3">{{ data.get('dim_test_tire_section_width_3') or '<input type="text" name="dim_test_tire_section_width_3" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_width_4">{{ data.get('dim_test_tire_section_width_4') or '<input type="text" name="dim_test_tire_section_width_4" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_width_5">{{ data.get('dim_test_tire_section_width_5') or '<input type="text" name="dim_test_tire_section_width_5" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_width_6">{{ data.get('dim_test_tire_section_width_6') or '<input type="text" name="dim_test_tire_section_width_6" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_section_width_spec">{{ data.get('dim_test_tire_section_width_spec') or '<input type="text" name="dim_test_tire_section_width_spec" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_section_width_gauge">{{ data.get('dim_test_tire_section_width_gauge') or '<input type="text" name="dim_test_tire_section_width_gauge" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td>汶沟深<br>Nonskid</td>
+                    <td id="dim_test_tire_section_nonskid_1">{{ data.get('dim_test_tire_nonskid_1') or '<input type="text" name="dim_test_tire_nonskid_1" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_nonskid_2">{{ data.get('dim_test_tire_nonskid_2') or '<input type="text" name="dim_test_tire_nonskid_2" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_nonskid_3">{{ data.get('dim_test_tire_nonskid_3') or '<input type="text" name="dim_test_tire_nonskid_3" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_nonskid_4">{{ data.get('dim_test_tire_nonskid_4') or '<input type="text" name="dim_test_tire_nonskid_4" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_nonskid_5">{{ data.get('dim_test_tire_nonskid_5') or '<input type="text" name="dim_test_tire_nonskid_5" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_nonskid_6">{{ data.get('dim_test_tire_nonskid_6') or '<input type="text" name="dim_test_tire_nonskid_6" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_section_nonskid_spec">{{ data.get('dim_test_tire_nonskid_spec') or '<input type="text" name="dim_test_tire_nonskid_spec" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_section_nonskid_gauge">{{ data.get('dim_test_tire_nonskid_gauge') or '<input type="text" name="dim_test_tire_nonskid_gauge" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td>磨耗<br>T.W.I</td>
+                    <td id="dim_test_tire_section_twi_1">{{ data.get('dim_test_tire_twi_1') or '<input type="text" name="dim_test_tire_twi_1" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_twi_2">{{ data.get('dim_test_tire_twi_2') or '<input type="text" name="dim_test_tire_twi_2" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_twi_3">{{ data.get('dim_test_tire_twi_3') or '<input type="text" name="dim_test_tire_twi_3" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_twi_4">{{ data.get('dim_test_tire_twi_4') or '<input type="text" name="dim_test_tire_twi_4" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_twi_5">{{ data.get('dim_test_tire_twi_5') or '<input type="text" name="dim_test_tire_twi_5" class="form-control">'|safe }}</td>
+                    <td id="dim_test_tire_section_twi_6">{{ data.get('dim_test_tire_twi_6') or '<input type="text" name="dim_test_tire_twi_6" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_section_twi_spec">{{ data.get('dim_test_tire_twi_spec') or '<input type="text" name="dim_test_tire_twi_spec" class="form-control">'|safe }}</td>
+                    <td></td>
+                    <td id="dim_test_tire_section_twi_gauge">{{ data.get('dim_test_tire_twi_gauge') or '<input type="text" name="dim_test_tire_twi_gauge" class="form-control">'|safe }}</td>
+                </tr>
+                <tr>
+                    <td colspan="5">尺寸测量判定<br>Judgement</td>
+                    <td colspan="6">
+                        <input type="radio" name="dim_judge">合格
+                        <input type="radio" name="dim_judge">不合格
+                    </td>
+                </tr>
+            </table>
+        {% endif %}
+        {% if 'unseat' in total %}
+            <table class="table table-bordered table-condensed table1">
+            <tr>
+                <td colspan="8">脱圈阻力</td>
+            </tr>
+            <tr>
+                <td>P值<br>P value</td>
+                <td id="unseat_test_p_value">{{ data.get('unseat_test_p_value') or '<input type="text" name="unseat_test_p_value" class="form-control">'|safe }}</td>
+                <td>测试速度<br>Speed</td>
+                <td colspan="2" id="unseat_test_speed">{{ data.get('unseat_test_speed') or '<input type="text" name="unseat_test_speed" class="form-control">'|safe }}</td>
+                <td>测试温度<br>Temperature</td>
+                <td colspan="2" id="unseat_test_temp">{{ data.get('unseat_test_temp') or '<input type="text" name="unseat_test_temp" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>测试风压<br>Pressure</td>
+                <td id="unseat_test_pressure">{{ data.get('unseat_test_pressure') or '<input type="text" name="unseat_test_pressure" class="form-control">'|safe }}</td>
+                <td>测试轮辋<br>Rim</td>
+                <td></td>
+                <td>测试时间<br>Time</td>
+                <td id="unseat_test_time">{{ data.get('unseat_test_time') or '<input type="text" name="unseat_test_time" class="form-control datetime">'|safe }}</td>
+                <td>技术员<br>Tech.</td>
+                <td id="unseat_test_operator">{{ data.get('unseat_test_operator') or '<input type="text" name="unseat_test_operator" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>参考标准<br>Reference</td>
+                <td id="unseat_test_ref">{{ data.get('unseat_test_ref') or '<input type="text" name="unseat_test_ref" class="form-control">'|safe }}</td>
+                <td>合格基准<br>Spec</td>
+                <td id="unseat_test_spec">{{ data.get('unseat_test_spec') or '<input type="text" name="unseat_test_spec" class="form-control">'|safe }}</td>
+                <td>脱唇块<br>Block</td>
+                <td id="unseat_test_block">{{ data.get('unseat_test_block') or '<input type="text" name="unseat_test_block" class="form-control">'|safe }}</td>
+                <td>设备编号<br>Equipment Id</td>
+                <td id="unseat_test_equipment_id">{{ data.get('unseat_test_equipmet_id') or '<input type="text" name="unseat_test_equipment_id" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">测试点<br>Position</td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td colspan="3">测试荷重<br>Load</td>
+                <td id="unseat_test_position_1">{{ data.get('unseat_test_position_1') or '<input type="text" name="unseat_test_position_1" class="form-control">'|safe }}</td>
+                <td id="unseat_test_position_2">{{ data.get('unseat_test_position_2') or '<input type="text" name="unseat_test_position_2" class="form-control">'|safe }}</td>
+                <td id="unseat_test_position_3">{{ data.get('unseat_test_position_3') or '<input type="text" name="unseat_test_position_3" class="form-control">'|safe }}</td>
+                <td id="unseat_test_position_4">{{ data.get('unseat_test_position_4') or '<input type="text" name="unseat_test_position_4" class="form-control">'|safe }}</td>
+                <td id="unseat_test_position_5">{{ data.get('unseat_test_position_5') or '<input type="text" name="unseat_test_position_5" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">轮胎状态<br>Tire Status</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>测试最大值<br>Max load</td>
+                <td id="unseat_test_position_max_value">{{ data.get('unseat_test_position_max_value') or '<input type="text" name="unseat_test_position_max_value" class="form-control">'|safe }}</td>
+                <td>合格率%<br>Yield</td>
+                <td></td>
+                <td>判定<br>Judgement</td>
+                <td colspan="3">
+                    <input type="radio" name="unseat_judge">合格
+                    <input type="radio" name="unseat_judge">不合格
+                </td>
+            </tr>
+            </table>
+        {% endif %}
+        {% if 'plunger' in total %}
+            <table class="table table-bordered table-condensed table1">
+            <tr>
+                <td colspan="8">破坏能</td>
+            </tr>
+            <tr>
+                <td colspan="2">测试速度<br>Speed</td>
+                <td colspan="2" id="plunger_test_speed">{{ data.get('plunger_test_speed') or '<input type="text" name="plunger_test_speed" class="form-control">'|safe }}</td>
+                <td colspan="2">测试温度<br>Temperature</td>
+                <td colspan="2" id="plunger_test_temp">{{ data.get('plunger_test_temp') or '<input type="text" name="plunger_test_temp" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>测试风压<br>Pressure</td>
+                <td id="plunger_test_pressure">{{ data.get('plunger_test_pressure') or '<input type="text" name="plunger_test_pressure" class="form-control">'|safe }}</td>
+                <td>测试轮辋<br>Dim</td>
+                <td></td>
+                <td>测试时间<br>Time</td>
+                <td id="plunger_test_time">{{ data.get('plunger_test_time') or '<input type="text" name="plunger_test_time" class="form-control datetime">'|safe }}</td>
+                <td>技术员<br>Tech.</td>
+                <td id="plunger_test_operator">{{ data.get('plunger_test_operator') or '<input type="text" name="plunger_test_operator" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>参考标准<br>Reference</td>
+                <td id="plunger_test_ref">{{ data.get('plunger_test_ref') or '<input type="text" name="plunger_test_ref" class="form-control">'|safe }}</td>
+                <td>合格基准<br>Spec</td>
+                <td id="plunger_test_spec">{{ data.get('plunger_test_spec') or '<input type="text" name="plunger_test_spec" class="form-control">'|safe }}</td>
+                <td>柱压杆<br>Bar size</td>
+                <td id="plunger_test_bar_size">{{ data.get('plunger_test_bar_size') or '<input type="text" name="plunger_test_bar_size" class="form-control">'|safe }}</td>
+                <td>设备编号<br>Equipment Id</td>
+                <td id="plunger_test_equipment_id">{{ data.get('plunger_test_equipment_id') or '<input type="text" name="plunger_test_equipment_id" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">测试点<br>Position</td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td colspan="3">测试荷重<br>Load</td>
+                <td id="plunger_test_load_1">{{ data.get('plunger_test_load_1') or '<input type="text" name="plunger_test_load_1" class="form-control">'|safe }}</td>
+                <td id="plunger_test_load_2">{{ data.get('plunger_test_load_2') or '<input type="text" name="plunger_test_load_2" class="form-control">'|safe }}</td>
+                <td id="plunger_test_load_3">{{ data.get('plunger_test_load_3') or '<input type="text" name="plunger_test_load_3" class="form-control">'|safe }}</td>
+                <td id="plunger_test_load_4">{{ data.get('plunger_test_load_4') or '<input type="text" name="plunger_test_load_4" class="form-control">'|safe }}</td>
+                <td id="plunger_test_load_5">{{ data.get('plunger_test_load_5') or '<input type="text" name="plunger_test_load_5" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">位移量<br>Deflection</td>
+                <td id="plunger_test_deflection_1">{{ data.get('plunger_test_deflection_1') or '<input type="text" name="plunger_test_deflection_1" class="form-control">'|safe }}</td>
+                <td id="plunger_test_deflection_2">{{ data.get('plunger_test_deflection_2') or '<input type="text" name="plunger_test_deflection_2" class="form-control">'|safe }}</td>
+                <td id="plunger_test_deflection_3">{{ data.get('plunger_test_deflection_3') or '<input type="text" name="plunger_test_deflection_3" class="form-control">'|safe }}</td>
+                <td id="plunger_test_deflection_4">{{ data.get('plunger_test_deflection_4') or '<input type="text" name="plunger_test_deflection_4" class="form-control">'|safe }}</td>
+                <td id="plunger_test_deflection_5">{{ data.get('plunger_test_deflection_5') or '<input type="text" name="plunger_test_deflection_5" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">能量<br>Energy</td>
+                <td id="plunger_test_energy_1">{{ data.get('plunger_test_energy_1') or '<input type="text" name="plunger_test_energy_1" class="form-control">'|safe }}</td>
+                <td id="plunger_test_energy_2">{{ data.get('plunger_test_energy_2') or '<input type="text" name="plunger_test_energy_2" class="form-control">'|safe }}</td>
+                <td id="plunger_test_energy_3">{{ data.get('plunger_test_energy_3') or '<input type="text" name="plunger_test_energy_3" class="form-control">'|safe }}</td>
+                <td id="plunger_test_energy_4">{{ data.get('plunger_test_energy_4') or '<input type="text" name="plunger_test_energy_4" class="form-control">'|safe }}</td>
+                <td id="plunger_test_energy_5">{{ data.get('plunger_test_energy_5') or '<input type="text" name="plunger_test_energy_5" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">轮胎状态<br>Tire Status</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>最大能量<br>Max Energy</td>
+                <td id="plunger_test_energy_max">{{ data.get('plunger_test_energy_max') or '<input type="text" name="plunger_test_energy_max" class="form-control">'|safe }}</td>
+                <td>合格率 %<br>Yeild</td>
+                <td></td>
+                <td>判定<br>Judgement</td>
+                <td colspan="3">
+                    <input type="radio" name="plunger_judge">合格
+                    <input type="radio" name="plunger_judge">不合格
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="2">备注<br>Remark</td>
+                <td colspan="4" rowspan="2" id="remark">{{ data.get('remark') or  '<textarea name="remark" id="" cols="30" rows="3" class="form-control"></textarea>'|safe }}</td>
+                <td>核定<br>Approval</td>
+                <td>审核<br>Auditing</td>
+                <td>报告人<br>Reporter</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Jim Ge</td>
+            </tr>
+            </table>
+        {% endif %}
+        {% if 'footprint' in total %}
+        {% endif %}
+    </div>
+        <input type="submit" class="btn btn-success" name="save" value="Save">
+        <div id="document_ref">QR-03-011-06</div>
+    </form>
+</div>
+<div class="copyright" id="copyright">
+    <div class="container-fluid">
+        <div>Cooper(Kunshan)Tire Co.,Ltd.</div>
+        <div>固铂(昆山)轮胎有限公司</div>
+        <table class="table" id="copyright_table">
+            <tr>
+                <td>
+                <div>CONFIDENTIAL</div>
+                <div>COMPETIVE COMMERICAL INFORMATION</div>
+                <div>Access limited to authorized personnel|Copyright@Unpublished</div>
+                </td>
+                <td>
+                <div>机密的</div>
+                <div>有竞争力的商业信息</div>
+                <div>仅限授权人员访问|版权所有@尚未发表</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script>
+    $(".datetime").datetimepicker({
+        format:'yyyy-mm-dd hh:ii',
+        //autoclose:true,//点选日期之后关闭控件
+        todayHighlight:true,
+        todayBtn:true,
+        maxView: "decade"
+    });
+    /*
+    双击修改td，保留原值
+     */
+    $("td").dblclick(function(){
+        //获取不到td的id值则取消逻辑
+        if ('undefined' == typeof($(this).attr('id'))){
+            alert('该单元格无法修改');
+            return false;
+        } else {
+            //若获取到id值传入构造的input中作为name
+            var td_id = $(this).attr('id');
+            //原值
+            var old_value = $(this)[0].innerText;
+            //原class
+            console.log(td_id);
+            console.log(old_value);
+            if (td_id.indexOf('time') != -1){
+                str = '<input type="text" class="form-control datetime" name="' +
+                    td_id + '" value="' + old_value + '">';
+            } else {
+                str = '<input type="text" class="form-control" name="' +
+                    td_id + '" value="' + old_value + '">';
+            }
+            console.log(str);
+            $(this).html(str);
+        }
+    });
+</script>
+</body>
+</html>

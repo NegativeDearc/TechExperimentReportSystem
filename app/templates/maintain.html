@@ -8,13 +8,13 @@
     <script src="/static/bootstrap.min.js"></script>
 </head>
 <style>
-    title,a,button,li,p,table,button,h2,h3,input {
+    title,a,button,li,p,table,button,h2,h3,input,option {
         font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
         font-weight:bold;
     }
 
     table,p,h2 {text-align: center;}
-    table td {vertical-align: middle!important;}
+    table td {vertical-align: middle!important;margin-top: 20px;}
 
     .navbar-brand {
         animation: colorful 5s;
@@ -68,17 +68,17 @@
                 <tr>
                     <td>
                         <button class="btn btn-warning" data-toggle="modal" data-target="#highspeed">插入数据</button>
-                        <button class="btn btn-warning" data-toggle="modal" data-target="">修改数据</button>
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#highspeed-edit">修改数据</button>
                     </td>
                     <td>
-                        <button class="btn btn-warning">插入数据</button>
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#endurance">插入数据</button>
                         <button class="btn btn-warning">修改数据</button>
                     </td>
                 </tr>
             </table>
         </div>
     </div>
-    <!--modal-->
+    <!--modal highspeed-->
     <div class="modal fade" id="highspeed" aria-hidden="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -91,7 +91,7 @@
                 <form action="" class="form-group" method="post" id="highspeed_form">
                 <div class="modal-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" id="t1">
                             <tr>
                                 <td>名称</td>
                                 <td>速度等级</td>
@@ -111,8 +111,8 @@
                                 <td>累计里程</td>
                             </tr>
                             {% for x in range(16)%}
-                                <tr>
-                                <td>{{ (x+1) }}</td>
+                                <tr id="{{ x+1 }}">
+                                <td>{{ x+1 }}</td>
                                 <td><input type="number" name="{{ "a" + (x+1)|safe }}" class="form-control"></td>
                                 <td><input type="number" name="{{ "b" + (x+1)|safe }}" class="form-control"></td>
                                 <td><input type="number" step="0.01" min="0" name="{{ "e" + (x+1)|safe }}" class="form-control"></td>
@@ -129,6 +129,106 @@
             </div>
         </div>
     </div>
+    <!--modal highspeed-edit-->
+    <div class="modal fade" id="highspeed-edit" aria-hidden="true" role="dialog">
+    	<div class="modal-dialog">
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+    					&times;
+    				</button>
+    				<h3>高速测试数据修改</h3>
+    			</div>
+    			<form class="form-group" method="post" id="highspeed-form-edit"> 
+    			<div class="modal-body">
+    				<select id="highspeed-select" class="select-form form-control">
+    					<option>选择测试条件</option>
+    				</select>
+                    <div id="json2table" class="table-responsive"></div>
+    			</div>
+    			<div class="modal-footer modal-footer-highspeed-edit"></div>
+    			</form> 
+    		</div>
+    	</div>
+    </div>
+    <!--modal endurance-->
+    <div class="modal fade" id="endurance" aria-hidden="true" role="dialog">
+    	<div class="modal-dialog"></div>
+    </div>
 </div>
+
+<script>
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    //ajax下拉 for highspeed-select
+    $.ajax({
+            url:$SCRIPT_ROOT + 'api/v1.0/highspeed/', //url地址
+            data:{'ref':'level'},                     //指定数据类型
+            contentType: "application/json",
+            dataType:'json',
+            success: function (data) {
+                //console.log(data);
+                $.each(data,function(ref,level){      //必须要带参数
+                    $('#highspeed-select').append(
+                            '<option value="' + ref +'">' +
+                            ref+'('+level+')'+'</option>'
+                    )
+                });
+            },
+            error:function(msg){
+                alert('连接数据库错误!');
+            }
+    });	
+    //联动获取table
+    $("#highspeed-select").change(function(){
+        $.ajax({
+    	url: $SCRIPT_ROOT + 'api/v1.0/highspeed/database/',
+        dataType:'json',
+    	data:{term:$("#highspeed-select").val()},
+    	success:function(data){
+    		//console.log(data);
+            var d = data[$("#highspeed-select").val()];
+            //清除按钮
+            $('.modal-footer-highspeed-edit').html('');
+            $('#json2table').html('');
+            //循环导入数据
+            str  = '<table class="table table-hover table-bordered">';
+            str += '<tr><td>名称</td><td>速度等级</td><td>载荷系数</td><td>备注</td></tr>';
+            str += '<tr>'
+            str += '<td><input type="text" class="form-control" name="c1" required ' +
+                    'value="' + d['info']['ref'] + '"></td>';
+            str += '<td><input type="text" class="form-control" name="c2" required ' +
+                    'value="' + d['info']['level'] + '"></td>';
+            str += '<td><input type="number" class="form-control" name="c3" required ' +
+                    'value="' + d['info']['load'] + '"></td>';
+            str += '<td><input type="text" class="form-control" name="c4"' +
+                    'value="' + d['info']['remark'] + '"></td>';
+            str += '</tr>'
+
+            for(i=1;i<16;i++){
+                str += '<tr>';
+                str += '<td>' + i + '</td>';
+                str += '<td><input type="number" class="form-control" name="' + 'a' + i + '" required value="' + d[i]['time'] + '"></td>';
+                str += '<td><input type="number" class="form-control" name="' + 'b' + i + '" required value="' + d[i]['speed'] + '"></td>';
+                str += '<td><input type="number" class="form-control" step="0.01" min="0" name="' + 'e' +
+                        i + '" required value="' + d[i]['total'] + '"></td>';
+                str += '</tr>';
+                console.log(str)
+            };
+
+            $('.modal-footer-highspeed-edit').append(
+                '<input type="submit" class="btn btn-default" name="sub2">' +
+                '<button class="btn btn-default">关闭</button>'
+            );
+            //显示
+            $('#json2table').html(str);
+    	},
+        error:function(msg){
+            console.log('No data in database');
+            $('.modal-footer-highspeed-edit').html('');
+            $('#json2table').html('');
+        }
+    	}); 	
+    })
+</script>
 </body>
 </html>
