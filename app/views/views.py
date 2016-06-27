@@ -7,6 +7,7 @@ from app.ext.request_detail import requestDetail
 from app.ext.formatted_dict import formatted_dict
 from app.ext.db_to_table import data_to_table
 from app.ext.test_staic import total_static_test_content, static_test_request_detail
+from app.ext.test_highspeed import highspeed_test_ref
 from urlparse import urlparse, urljoin
 from flask import request, session, abort, render_template, \
     redirect, flash, url_for, send_from_directory, jsonify
@@ -107,8 +108,44 @@ def test_endurance(uuid):
 @app.route('/report/highspeed/<uuid>/', methods=['GET', 'POST'])
 def test_highspeed(uuid):
     detail = static_test_request_detail(uuid)
-    data = {}
-    return render_template('test_highspeed.html',detail=detail,data=data)
+    ref = highspeed_test_ref(uuid)
+
+    pickled_data = db.session.query(ReportDetail.test_data). \
+        filter(ReportDetail.uuid == uuid,
+               ReportDetail.test_content == 'highspeed'). \
+        first()
+
+    if pickled_data:
+        data = loads(pickled_data.test_data)
+    else:
+        data = {}
+    try:
+        database = data_to_table(ref.get('ref'))
+    except Exception:
+        database = {}
+
+    if request.method == 'POST':
+        data.update({str(x):y for x,y in request.form.items()})
+        try:
+            db.session.add(
+                ReportDetail(uuid=uuid, test_content='highspeed', test_data=dumps(data))
+            )
+            db.session.commit()
+        except Exception:
+            db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
+            db.session.query(ReportDetail).\
+                filter(ReportDetail.test_content == 'highspeed',
+                       ReportDetail.uuid == uuid).\
+                update({ReportDetail.test_data: dumps(data)})
+            db.session.commit()
+        finally:
+            db.session.close()
+            return redirect(url_for('test_highspeed',uuid=uuid))
+    return render_template('test_highspeed.html',
+                           detail=detail,
+                           data=data,
+                           ref=ref,
+                           database=database)
 
 
 # 静态实验测试地址
@@ -140,6 +177,8 @@ def test_static(uuid):
                        ReportDetail.uuid == uuid).\
                 update({ReportDetail.test_data: dumps(data)})
             db.session.commit()
+        finally:
+            db.session.close()
         return redirect(url_for('test_static',uuid=uuid))
     return render_template('test_static.html', total=total, detail=detail, data=data)
 

@@ -141,6 +141,8 @@
                 <td>{{ detail.get('inflate') }}kpa</td>
             </tr>
         </table>
+        </div>
+        <!-- 多份表单循环点开始 -->
         <table class="table table-bordered table-condensed table1">
                 <tr>
                     <td colspan="11">试验前尺寸</td>
@@ -228,22 +230,186 @@
                 <td>测试轮辋<br>Rim</td>
                 <td></td>
                 <td>测试时间<br>Test Date</td>
-                <td id="highspeed_test_date"><input type="text" class="form-control datetime" name="highspeed_test_date"></td>
+                <td id="highspeed_test_date">{{ data.get('highspeed_test_date') or '<input type="text" class="form-control datetime" name="highspeed_test_date">'|safe }}</td>
                 <td>环境温度<br>Temperature</td>
-                <td id="highspeed_test_temp"><input type="text" class="form-control" name="highspeed_test_temp"></td>
+                <td id="highspeed_test_temp">{{ data.get('highspeed_test_temp') or '<input type="text" class="form-control" name="highspeed_test_temp">'|safe }}</td>
             </tr>
             <tr>
                 <td>参考标准<br>Reference</td>
-                <td></td>
+                <td>{{ ref.get('ref') }}</td>
                 <td>合格条件<br>Cert.Min.</td>
                 <td></td>
                 <td>设备编号<br>Equipment Id</td>
-                <td id="highspeed_test_equipment_id"><input type="text" name="highspeed_test_equipment_id" class="form-control"></td>
+                <td id="highspeed_test_equipment_id">
+                    {{ data.get('highspeed_test_equipment_id') or '<input type="text" name="highspeed_test_equipment_id" class="form-control">'|safe }}
+                </td>
                 <td>技术员<br>Tech.</td>
-                <td id="highspped_test_operator"><input type="text" name="highspeed_test_operator" class="form-control"></td>
+                <td id="highspped_test_operator">
+                    {{ data.get('highspeed_test_operator') or '<input type="text" name="highspeed_test_operator" class="form-control">'|safe }}
+                </td>
             </tr>
         </table>
+        <!-- 两表组合 -->
+        <div class="row">
+            <div class="col-md-6">
+            <!-- 高速数据表 -->
+            <table class="table table-bordered table-condensed table1">
+            {% if database %}
+                <tr>
+                <td colspan="6">轮胎实验数据</td>
+                </tr>
+                {% for k,v in database.items() %}
+                    <tr>
+                    <td>{{ k }}</td>
+                    <td>{{ database.get(k).get('time','TIME') }}</td>
+                    <td>{{ database.get('info').get('load') * detail.get('load') / 100 }}kg</td>
+                    <td>{{ database.get(k).get('speed','SPEED') }}</td>
+                    <td>{{ database.get(k).get('mile','MILE') }}</td>
+                    <td>{{ database.get(k).get('total','TOTAL') }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-bordered table-condensed table1">
+                    <tr>
+                        <td colspan="8">试验后轮胎状态</td>
+                    </tr>
+                    <tr>
+                        <td>项目<br><small>Item</small></td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>平均值<br><small>Avg</small></td>
+                    </tr>
+                    <tr>
+                        <td>外径<br><small>Dia.</small></td>
+                        <td colspan="7" id="highspeed_after_test_dia">
+                            {{ data.get('highspeed_after_test_dia') or '<input type="text" class="form-control" name="highspeed_after_test_dia">'|safe }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>总宽<br><small>Overall Width</small></td>
+                        <td id="highspeed_after_test_ow_1">
+                            {{ data.get('highspeed_after_test_ow_1') or '<input type="text" name="highspeed_after_test_ow_1" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_ow_2">
+                            {{ data.get('highspeed_after_test_ow_2') or '<input type="text" name="highspeed_after_test_ow_2" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_ow_3">
+                            {{ data.get('highspeed_after_test_ow_3') or '<input type="text" name="highspeed_after_test_ow_3" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_ow_4">
+                            {{ data.get('highspeed_after_test_ow_4') or '<input type="text" name="highspeed_after_test_ow_4" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_ow_5">
+                            {{ data.get('highspeed_after_test_ow_5') or '<input type="text" name="highspeed_after_test_ow_5" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_ow_6">
+                            {{ data.get('highspeed_after_test_ow_6') or '<input type="text" name="highspeed_after_test_ow_6" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_ow_avg">
+                            {{ data.get('highspeed_after_test_ow_avg') or '<input type="text" name="highspeed_after_test_ow_avg" class="form-control">'|safe }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>断宽<br><small>Section Width</small></td>
+                        <td id="highspeed_after_test_sw_1">
+                            {{ data.get('highspeed_after_test_sw_1') or '<input type="text" name="highspeed_after_test_sw_1" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_sw_2">
+                            {{ data.get('highspeed_after_test_sw_2') or '<input type="text" name="highspeed_after_test_sw_2" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_sw_3">
+                            {{ data.get('highspeed_after_test_sw_3') or '<input type="text" name="highspeed_after_test_sw_3" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_sw_4">
+                            {{ data.get('highspeed_after_test_sw_4') or '<input type="text" name="highspeed_after_test_sw_4" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_sw_5">
+                            {{ data.get('highspeed_after_test_sw_5') or '<input type="text" name="highspeed_after_test_sw_5" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_sw_6">
+                            {{ data.get('highspeed_after_test_sw_6') or '<input type="text" name="highspeed_after_test_sw_6" class="form-control">'|safe }}
+                        </td>
+                        <td id="highspeed_after_test_sw_avg">
+                            {{ data.get('highspeed_after_test_sw_avg') or '<input type="text" name="highspeed_after_test_sw_avg" class="form-control">'|safe }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>总阶段<br><small>Total Phases</small></td>
+                        <td id="highspeed_total_phases">
+                            {{ data.get('highspeed_total_phases') or '<input type="number" name="highspeed_total_phases" class="form-control">'|safe }}
+                        </td>
+                        <td>最后阶段里程<br><small>Last Phases km</small></td>
+                        <td colspan="2" id="highspeed_last_phases">
+                            {{ data.get('highspeed_last_phases') or '<input type="text" name="highspeed_last_phases" class="form-control">'|safe }}
+                        </td>
+                        <td>总里程(千米)<br><small>Total km</small></td>
+                        <td colspan="2" id="highspeed_total_km">
+                            {{ data.get('highspeed_total_km') or '<input type="text" name="highspeed_total_km" class="form-control">'|safe }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">结果判定<br><small>Result Judgement</small></td>
+                        <td colspan="5">
+                            <input type="radio" name="highspeed_test_result">合格
+                            <input type="radio" name="highspeed_test_result">不合格
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">分析代码<br><small>Analysis Code</small></td>
+                        <td colspan="2" id="highspeed_analy_code">
+                            {{ data.get('highspeed_analy_code') or '<input type="text" name="highspeed_analy_code" class="form-control">'|safe }}
+                        </td>
+                        <td colspan="2">二期分析代码<br><small>Secondary Analysis Code</small></td>
+                        <td colspan="2" id="highspeed_analy_second_code">
+                            {{ data.get('highspeed_analy_second_code') or '<input type="text" name="highspeed_analy_second_code" class="form-control">'|safe }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">分析位置<br><small>Analy Location</small></td>
+                        <td colspan="2" id="highspeed_analy_location">
+                            {{ data.get('highspeed_analy_location') or '<input type="text" name="highspeed_analy_location" class="form-control">'|safe }}
+                        </td>
+                        <td colspan="2">二期分析位置<br><small>Secondary Analy Location</small></td>
+                        <td colspan="2" id="highspeed_analy_second_location">
+                            {{ data.get('highspeed_analy_second_location') or '<input type="text" name="highspeed_analy_second_location" class="form-control">'|safe }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
+        <table class="table table-bordered table-condensed table1">
+            <tr>
+                <td colspan="2">分析注解<small>Anyalysis Comments</small></td>
+            </tr>
+            <tr>
+                <td>1占位</td>
+                <td>2占位</td>
+            </tr>
+        </table>
+        <!-- 多份表单循环点结束 -->
+        <table class="table table-bordered">
+            <tr>
+                <td rowspan="2">备注</td>
+                <td rowspan="2">
+                    {{ data.get('highspeed_remark') or '<textarea name="highspeed_remark" id="" cols="10" rows="4" class="form-control"></textarea>'|safe }}
+                </td>
+                <td>核定<br><small>Approval</small></td>
+                <td>审核<br><small>Aduditing</small></td>
+                <td>报告人<br><small>Report</small></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Jim Ge</td>
+            </tr>
+        </table>
         <input type="submit" class="btn btn-success" name="save" value="Save">
         <div id="document_ref">QR-03-011-06</div>
     </form>

@@ -1,4 +1,4 @@
-# -*- coding:itf-8 -*-
+# -*- coding:utf-8 -*-
 __author__ = 'SXChen'
 
 from app import db
@@ -13,3 +13,11 @@ def highspeed_test_quantity(uuid):
                testContent.test_type == 'C').first()
     return int(quantity.req_num)
 
+
+def highspeed_test_ref(uuid):
+    ref = db.session.query(testContent.test_content).\
+        filter(testContent.test_type == 'C',
+               testContent.uuid == uuid).\
+        first()
+
+    return {'ref':ref.test_content}
