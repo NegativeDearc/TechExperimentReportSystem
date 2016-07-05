@@ -11,7 +11,7 @@ def highspeed_test_quantity(uuid):
     quantity = db.session.query(testContent.test_quantity).\
         filter(testContent.uuid == uuid,
                testContent.test_type == 'C').first()
-    return int(quantity.req_num)
+    return int(quantity.test_quantity)
 
 
 def highspeed_test_ref(uuid):

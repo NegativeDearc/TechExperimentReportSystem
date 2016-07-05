@@ -1,13 +1,13 @@
 # -*- coding:utf-8 -*-
 import os
 from app import app, db
-from app.models.dbModels import usrPwd, requestForms, testContent, Highspeed, ReportDetail
+from app.models.dbModels import usrPwd, requestForms, testContent, Highspeed, ReportDetail, Endurance
 from app.ext.test_info import testInfo
 from app.ext.request_detail import requestDetail
 from app.ext.formatted_dict import formatted_dict
 from app.ext.db_to_table import data_to_table
 from app.ext.test_staic import total_static_test_content, static_test_request_detail
-from app.ext.test_highspeed import highspeed_test_ref
+from app.ext.test_highspeed import highspeed_test_ref, highspeed_test_quantity
 from urlparse import urlparse, urljoin
 from flask import request, session, abort, render_template, \
     redirect, flash, url_for, send_from_directory, jsonify
@@ -88,27 +88,31 @@ def tester():
     return render_template('tester.html', data=data)
 
 
+# 高速/耐久数据库维护
 @app.route('/maintain', methods=['GET', 'POST'])
 def maintain():
+    # 注意高速那就数据的区别
     if request.method == 'POST':
-        print request.form
-        # 考虑到数据修改的可能性，db.session.add 应改为 db.session.merge
-        db.session.add(Highspeed(formatted_dict(request.form)))
-        db.session.commit()
+        if request.form.get('sub1'):
+            db.session.add(Highspeed(formatted_dict(request.form)))
+            db.session.commit()
+        if request.form.get('sub2'):
+            # 考虑到数据修改的可能性，db.session.add 应改为 db.session.merge
+            pass
+        if request.form.get('sub3'):
+            pass
+        if request.form.get('sub4'):
+            pass
         return redirect(url_for('maintain'))
     return render_template('maintain.html')
-
-
-@app.route('/report/endurance/<uuid>/',methods=['GET','POST'])
-def test_endurance(uuid):
-    return '%s' % uuid
 
 
 # 高速实验测试地址
 @app.route('/report/highspeed/<uuid>/', methods=['GET', 'POST'])
 def test_highspeed(uuid):
-    detail = static_test_request_detail(uuid)
-    ref = highspeed_test_ref(uuid)
+    detail   = static_test_request_detail(uuid)
+    ref      = highspeed_test_ref(uuid)
+    quantity = highspeed_test_quantity(uuid)
 
     pickled_data = db.session.query(ReportDetail.test_data). \
         filter(ReportDetail.uuid == uuid,
@@ -145,14 +149,25 @@ def test_highspeed(uuid):
                            detail=detail,
                            data=data,
                            ref=ref,
-                           database=database)
+                           database=database,
+                           quantity=quantity)
+
+
+# 耐久测试地址
+@app.route('/report/endurance/<uuid>/',methods=['GET','POST'])
+def test_endurance(uuid):
+    detail       = static_test_request_detail(uuid)
+    data         = {}
+    return render_template('test_endurance.html',
+                           detail=detail,
+                           data=data)
 
 
 # 静态实验测试地址
 @app.route('/report/static/<uuid>/', methods=['GET', 'POST'])
 def test_static(uuid):
-    total = total_static_test_content(uuid)
-    detail = static_test_request_detail(uuid)
+    total        = total_static_test_content(uuid)
+    detail       = static_test_request_detail(uuid)
     pickled_data = db.session.query(ReportDetail.test_data). \
         filter(ReportDetail.uuid == uuid,
                ReportDetail.test_content == 'static'). \
@@ -198,6 +213,12 @@ def get_highspeed_lst():
     return jsonify(df)
 
 
+@app.route('/api/v1.0/endurance/')
+def get_endurance_lst():
+    df = db.session.query(Endurance.ref).all()
+    return jsonify(df)
+
+
 @app.route('/api/v1.0/highspeed/database/')
 def get_highspeed_db():
     ref = request.args.get('term', '')
@@ -207,3 +228,8 @@ def get_highspeed_db():
         return jsonify({ref: x})
     except Exception:
         return abort(500)
+
+
+@app.route('/api/v1.0/endurance/database/')
+def get_endurance_db():
+    pass

@@ -6,14 +6,19 @@
     <link rel="stylesheet" href="/static/bootstrap.min.css">
     <script src="/static/jquery.min.js"></script>
     <script src="/static/bootstrap.min.js"></script>
+
+    <!--icheck-->
+    <script src="/static/icheck-1.x/icheck.js"></script>
+    <link rel="stylesheet" href="/static/icheck-1.x/skins/flat/red.css">
 </head>
 <style>
-    title,a,button,li,p,table,button,h2,h3,input,option {
+    title,a,button,li,p,table,button,h2,h3,input,option,label {
         font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
         font-weight:bold;
     }
 
-    table,p,h2 {text-align: center;}
+    label {color: red;}
+    table,p,h2,caption {text-align: center;}
     table td {vertical-align: middle!important;margin-top: 20px;}
 
     .navbar-brand {
@@ -123,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="submit" class="btn btn-default" name="sub1">
-                    <button class="btn btn-default">关闭</button>
+                    <button class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
                 </form>
             </div>
@@ -153,7 +158,48 @@
     </div>
     <!--modal endurance-->
     <div class="modal fade" id="endurance" aria-hidden="true" role="dialog">
-    	<div class="modal-dialog"></div>
+    	<div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>耐久测试维护</h3>
+                </div>
+                <form action="" class="form-group" method="post" id="endurance_form">
+                    <div class="modal-body">
+                        <label for="low_pressure_endurance">若包含低压耐久请勾选</label>
+                        <input type="checkbox" id="low_pressure_endurance">
+                        <div class="table-responsive" id="endurance_table">
+                            <table class="table table-bordered table-condensed">
+                                <caption>耐久测试维护</caption>
+                                <tr>
+                                    <td colspan="3">参考标准</td>
+                                    <td colspan="2"><input type="text" name="endurance_ref" class="form-control" required></td>
+                                </tr>
+                                {% set header=['阶段','时间','速度','荷重','累计里程'] %}
+                                <tr>
+                                    {% for h in header %}
+                                        <td>{{ h }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% for x in range(12) %}
+                                <tr>
+                                <td>{{ x+1 }}</td>
+                                <td><input type="number" step="1" min="0" name="endurance_time_{{ x+1 }}" class="form-control"></td>
+                                <td><input type="number" step="0.1" min="0" name="endurance_speed_{{ x+1 }}" class="form-control"></td>
+                                <td><input type="number" step="0.1" min="0" name="endurance_load_{{ x+1 }}" class="form-control"></td>
+                                <td><input type="number" step="0.01" min="0" name="endurance_total_{{ x+1 }}" class="form-control"></td>
+                                </tr>
+                            {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn" value="提交" name="sub3">
+                        <button class="btn" data-dismiss="modal">关闭</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -228,7 +274,37 @@
             $('#json2table').html('');
         }
     	}); 	
-    })
+    });
+    //iCheck 组件初始化
+    $(document).ready(function(){
+      $('#low_pressure_endurance').iCheck({
+          checkboxClass: 'icheckbox_flat-red',
+          radioClass:'iradio_flat-red',
+          increaseArea:'20%' // optional
+      });
+    });
+    //若iCheck被勾选，插入行
+    $("#low_pressure_endurance").on('ifChecked',function(event){
+        console.log(event.type + 'callback');
+        str = '<table class="table table-bordered" id="low_pressure_endurance_table">';
+        str += '<caption>低压耐久测试</caption>';
+        str += '<tr><td colspan="3">测试风压</td><td colspan="2"><input type="number" step="1" class="form-control"></td></tr>';
+        for(var i=1;i<3;i++){
+            str += '<tr><td>' + i +
+                    '</td><td><input type="number" name="low_pressure_endurance_time_"' + i +
+                    ' class="form-control"></td><td><input type="number" step="0.1" class="form-control" name="low_pressure_endurance_speed_' + i +
+                    '"></td><td><input type="number" class="form-control" name="low_pressure_endurance_load_"' + i +
+                    '></td><td><input type="number" step="0.01" class="form-control" name="low_pressure_endurance_total_' + i +
+                    '"></td></tr>'
+        }
+        str += '</table>';
+        $('#endurance_table').append(str);
+    });
+    //
+    $("#low_pressure_endurance").on('ifUnchecked',function(event){
+        console.log(event.type + 'callback');
+        $('#low_pressure_endurance_table').remove();
+    });
 </script>
 </body>
 </html>

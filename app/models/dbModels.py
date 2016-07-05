@@ -347,12 +347,20 @@ class Highspeed(db.Model):
         self.total_16    = kwargs['step_16'][3]
 
 
-# class Endurance(db.Model):
-#     '''
-#     耐久测试数据表
-#     '''
-#     __tablename__ = 'endurance_test'
-#     id            = db.Column(db.Integer,primary_key=True,nullable=False)
+class Endurance(db.Model):
+    '''
+    耐久测试数据表
+    '''
+    __tablename__ = 'endurance_test'
+    id            = db.Column(db.Integer,primary_key=True,nullable=False)
+    ref           = db.Column(db.String(10),nullable=False)
+    data          = db.Column(db.BLOB)
+
+    def __init__(self,form):
+        # form is request.form
+        self.ref  = None
+        self.data = None
+
 
 class ReportDetail(db.Model):
     '''
