@@ -174,34 +174,29 @@
                         <td colspan="4" class="warning">动态性能</td>
                     </tr>
                     <tr>
-                        <td>耐久性能</td>
+                        <td>高速性能</td>
                         <td>
-                            <select name="endurance" id="endurance"  multiple="multiple" class="select-form form-control">
-                                <optgroup label="test1">
-                                    <option value="a">a</option>
-                                    <option value="b">b</option>
-                                    <option value="c">c</option>
-                                </optgroup>
+                            <select name="highspeed" id="highspeed"  multiple="multiple" class="select-form form-control">
                             </select>
                         </td>
                         <td>数量</td>
                         <td>
-                            <select name="endurance_quantity" id="endurance_quantity" class="select-form form-control" multiple="multiple">
+                            <select name="highspeed_quantity" id="highspeed_quantity" class="select-form form-control" multiple="multiple">
                             </select>
                         </td>
                     </tr>
                     <tr>
-                        <td>高速性能</td>
+                        <td>耐久性能</td>
                         <td>
-                            <select name="highspeed" id="highspeed" class="select-form form-control" multiple="multiple">
+                            <select name="endurance" id="endurance" class="select-form form-control" multiple="multiple">
                             </select>
                         </td>
                         <td>数量</td>
-                        <td><input type="number" min="0" name="highspeed_quantity" class="form-control"></td>
+                        <td><input type="number" min="0" name="endurance_quantity" class="form-control"></td>
                     </tr>
                     <tr>
                         <td rowspan="2">备注</td>
-                        <td rowspan="2"><input type="text" class="form-control"></td>
+                        <td rowspan="2"><textarea name="remark" id="" cols="2" rows="3" class="form-control"></textarea></td>
                         <td>核定</td>
                         <td>申请人</td>
                     </tr>
@@ -261,6 +256,25 @@
                 alert('连接数据库错误!');
             }
     });
+    //ajax下拉 for endurance
+    $.ajax({
+            url:$SCRIPT_ROOT + 'api/v1.0/endurance/', //url地址
+            data:{'ref':'level'},                     //指定数据类型
+            contentType: "application/json",
+            dataType:'json',
+            success: function (data) {
+                console.log(data);
+                $.each(data,function(ref){      //必须要带参数
+                    $('#endurance').append(
+                            '<option value="' + ref +'">' +
+                            ref+'</option>'
+                    )
+                });
+            },
+            error:function(msg){
+                alert('连接数据库错误!');
+            }
+    });
     //icheck 组件初始化
     $(document).ready(function(){
       $('input').each(function(){
@@ -284,11 +298,12 @@
     //下拉多选
     $(document).ready(function(){
         $("#endurance").select2({
-            placeholder:'选择耐久测试条件'
+            placeholder:'选择耐久测试条件',
+            maximumSelectionLength: 2
         });
     });
     $(document).ready(function(){
-        $("#endurance_quantity").select2({
+        $("#highspeed_quantity").select2({
             placeholder:'选择测试条数,输入数字并回车',
             tags:true,
             tokenSeparators:[',','']
@@ -296,8 +311,7 @@
     });
     $(document).ready(function(){
         $("#highspeed").select2({
-            placeholder:'选择高速测试条件',
-            maximumSelectionLength: 1
+            placeholder:'选择高速测试条件'
         });
     });
 </script>

@@ -112,6 +112,7 @@ class testContent(db.Model):
     test_quantity= db.Column(db.Integer,default=1)
     test_type    = db.Column(db.String(10),nullable=False)
     if_test      = db.Column(db.BOOLEAN,nullable=False,default=False)
+    # test_progress= db.Column(db.Float(3),default=0)
 
     # 注意这边初始化的参数顺序！
     def __init__(self,id=None,request_id=None,test_content=None,
@@ -155,11 +156,10 @@ class testContent(db.Model):
             for k,v in zip(form.getlist('endurance'),form.getlist('endurance_quantity')):
                 db.session.add(testContent(uuid_id,request_id,k,v,'B',self.if_test))
 
-        # 高速实验仅有一种条件
+        # 高速实验
         if form.getlist('highspeed'):
             # zip会对所有可递归对象解包，字符串会被逐字分解，是个隐秘的出错点，在这里嵌套一层list
-            for k,v in zip([form.get('highspeed')],[form.get('highspeed_quantity')]):
-                print k,v
+            for k,v in zip(form.getlist('highspeed'),form.getlist('highspeed_quantity')):
                 db.session.add(testContent(uuid_id,request_id,k,v,'C',self.if_test))
         else:
             pass
@@ -349,17 +349,266 @@ class Highspeed(db.Model):
 
 class Endurance(db.Model):
     '''
-    耐久测试数据表
+    耐久测试数据表,到底是逐条数据维护呢，还是直接填入pickle化的数据
     '''
     __tablename__ = 'endurance_test'
     id            = db.Column(db.Integer,primary_key=True,nullable=False)
     ref           = db.Column(db.String(10),nullable=False)
-    data          = db.Column(db.BLOB)
 
-    def __init__(self,form):
-        # form is request.form
-        self.ref  = None
-        self.data = None
+    time_1       = db.Column(db.Integer,nullable=False)
+    speed_1      = db.Column(db.Float(3),nullable=False)
+    mile_1       = db.Column(db.Float(3),nullable=False)
+    total_1      = db.Column(db.Float(3))
+    load_1       = db.Column(db.Float(3))
+
+    time_2       = db.Column(db.Integer,nullable=False)
+    speed_2      = db.Column(db.Float(3),nullable=False)
+    mile_2       = db.Column(db.Float(3),nullable=False)
+    total_2      = db.Column(db.Float(3))
+    load_2       = db.Column(db.Float(3))
+
+    time_3       = db.Column(db.Integer,nullable=False)
+    speed_3      = db.Column(db.Float(3),nullable=False)
+    mile_3       = db.Column(db.Float(3),nullable=False)
+    total_3      = db.Column(db.Float(3))
+    load_3       = db.Column(db.Float(3))
+
+    time_4       = db.Column(db.Integer,nullable=False)
+    speed_4      = db.Column(db.Float(3),nullable=False)
+    mile_4       = db.Column(db.Float(3),nullable=False)
+    total_4      = db.Column(db.Float(3))
+    load_4       = db.Column(db.Float(3))
+
+    time_5       = db.Column(db.Integer,nullable=False)
+    speed_5      = db.Column(db.Float(3),nullable=False)
+    mile_5       = db.Column(db.Float(3),nullable=False)
+    total_5      = db.Column(db.Float(3))
+    load_5       = db.Column(db.Float(3))
+
+    time_6       = db.Column(db.Integer)
+    speed_6      = db.Column(db.Float(3))
+    mile_6       = db.Column(db.Float(3))
+    total_6      = db.Column(db.Float(3))
+    load_6       = db.Column(db.Float(3))
+
+    time_7       = db.Column(db.Integer)
+    speed_7      = db.Column(db.Float(3))
+    mile_7       = db.Column(db.Float(3))
+    total_7      = db.Column(db.Float(3))
+    load_7       = db.Column(db.Float(3))
+
+    time_8       = db.Column(db.Integer)
+    speed_8      = db.Column(db.Float(3))
+    mile_8       = db.Column(db.Float(3))
+    total_8      = db.Column(db.Float(3))
+    load_8      = db.Column(db.Float(3))
+
+    time_9       = db.Column(db.Integer)
+    speed_9      = db.Column(db.Float(3))
+    mile_9       = db.Column(db.Float(3))
+    total_9      = db.Column(db.Float(3))
+    load_9       = db.Column(db.Float(3))
+
+    time_10       = db.Column(db.Integer)
+    speed_10      = db.Column(db.Float(3))
+    mile_10       = db.Column(db.Float(3))
+    total_10      = db.Column(db.Float(3))
+    load_10       = db.Column(db.Float(3))
+
+    time_11       = db.Column(db.Integer)
+    speed_11      = db.Column(db.Float(3))
+    mile_11       = db.Column(db.Float(3))
+    total_11      = db.Column(db.Float(3))
+    load_11       = db.Column(db.Float(3))
+
+    time_12       = db.Column(db.Integer)
+    speed_12      = db.Column(db.Float(3))
+    mile_12       = db.Column(db.Float(3))
+    total_12      = db.Column(db.Float(3))
+    load_12       = db.Column(db.Float(3))
+
+    time_13       = db.Column(db.Integer)
+    speed_13      = db.Column(db.Float(3))
+    mile_13       = db.Column(db.Float(3))
+    total_13      = db.Column(db.Float(3))
+    load_13       = db.Column(db.Float(3))
+
+    time_14       = db.Column(db.Integer)
+    speed_14      = db.Column(db.Float(3))
+    mile_14       = db.Column(db.Float(3))
+    total_14      = db.Column(db.Float(3))
+    load_14       = db.Column(db.Float(3))
+
+    time_15       = db.Column(db.Integer)
+    speed_15      = db.Column(db.Float(3))
+    mile_15       = db.Column(db.Float(3))
+    total_15      = db.Column(db.Float(3))
+    load_15       = db.Column(db.Float(3))
+
+    time_16       = db.Column(db.Integer)
+    speed_16      = db.Column(db.Float(3))
+    mile_16       = db.Column(db.Float(3))
+    total_16      = db.Column(db.Float(3))
+    load_16       = db.Column(db.Float(3))
+
+    low_pressure_time_1       = db.Column(db.Integer)
+    low_pressure_speed_1      = db.Column(db.Float(3))
+    low_pressure_mile_1       = db.Column(db.Float(3))
+    low_pressure_total_1      = db.Column(db.Float(3))
+    low_pressure_load_1       = db.Column(db.Float(3))
+
+    def __init__(self,kwargs):
+        '''
+        **kwargs --> request.form
+        '''
+        d = {}
+        for k,v in kwargs.items():
+            if len(v) == 0:
+                v = 0
+            d.update({k:v})
+
+        kwargs = d
+
+        def mile(time,speed):
+            try:
+                float(time)
+            except ValueError:
+                time = 0
+            try:
+                float(speed)
+            except ValueError:
+                speed = 0
+            return round(float(time) * float(speed),2)
+
+        self.ref         = kwargs.get('endurance_ref')
+
+        self.time_1      = kwargs.get('endurance_time_1',0)
+        self.speed_1     = kwargs.get('endurance_speed_1',0)
+        self.mile_1      = mile(kwargs.get('endurance_time_1',0),kwargs.get('endurance_speed_1',0))
+        self.total_1     = kwargs.get('endurance_total_1',0)
+        self.load_1      = kwargs.get('endurance_load_1',0)
+
+        self.time_2      = kwargs.get('endurance_time_2',0)
+        self.speed_2     = kwargs.get('endurance_speed_2',0)
+        self.mile_2      = mile(kwargs.get('endurance_time_2',0),kwargs.get('endurance_speed_2',0))
+        self.total_2     = kwargs.get('endurance_total_2',0)
+        self.load_2      = kwargs.get('endurance_load_2',0)
+
+        self.time_3      = kwargs.get('endurance_time_3',0)
+        self.speed_3     = kwargs.get('endurance_speed_3',0)
+        self.mile_3      = mile(kwargs.get('endurance_time_3',0),kwargs.get('endurance_speed_3',0))
+        self.total_3     = kwargs.get('endurance_total_3',0)
+        self.load_3      = kwargs.get('endurance_load_3',0)
+
+        self.time_4      = kwargs.get('endurance_time_4',0)
+        self.speed_4     = kwargs.get('endurance_speed_4',0)
+        self.mile_4      = mile(kwargs.get('endurance_time_4',0),kwargs.get('endurance_speed_4',0))
+        self.total_4     = kwargs.get('endurance_total_4',0)
+        self.load_4      = kwargs.get('endurance_load_4',0)
+
+        self.time_5      = kwargs.get('endurance_time_5',0)
+        self.speed_5     = kwargs.get('endurance_speed_5',0)
+        self.mile_5      = mile(kwargs.get('endurance_time_5',0),kwargs.get('endurance_speed_5',0))
+        self.total_5     = kwargs.get('endurance_total_5',0)
+        self.load_5      = kwargs.get('endurance_load_5',0)
+
+        self.time_6      = kwargs.get('endurance_time_6',0)
+        self.speed_6     = kwargs.get('endurance_speed_6',0)
+        self.mile_6      = mile(kwargs.get('endurance_time_6',0),kwargs.get('endurance_speed_6',0))
+        self.total_6     = kwargs.get('endurance_total_6',0)
+        self.load_6      = kwargs.get('endurance_load_6',0)
+
+        self.time_7      = kwargs.get('endurance_time_7',0)
+        self.speed_7     = kwargs.get('endurance_speed_7',0)
+        self.mile_7      = mile(kwargs.get('endurance_time_7',0),kwargs.get('endurance_speed_7',0))
+        self.total_7     = kwargs.get('endurance_total_7',0)
+        self.load_7      = kwargs.get('endurance_load_7',0)
+
+        self.time_8      = kwargs.get('endurance_time_8',0)
+        self.speed_8     = kwargs.get('endurance_speed_8',0)
+        self.mile_8      = mile(kwargs.get('endurance_time_8',0),kwargs.get('endurance_speed_8',0))
+        self.total_8     = kwargs.get('endurance_total_8',0)
+        self.load_8      = kwargs.get('endurance_load_8',0)
+
+        self.time_9      = kwargs.get('endurance_time_9',0)
+        self.speed_9     = kwargs.get('endurance_speed_9',0)
+        self.mile_9      = mile(kwargs.get('endurance_time_9',0),kwargs.get('endurance_speed_9',0))
+        self.total_9     = kwargs.get('endurance_total_9',0)
+        self.load_9      = kwargs.get('endurance_load_9',0)
+
+        self.time_10      = kwargs.get('endurance_time_10',0)
+        self.speed_10     = kwargs.get('endurance_speed_10',0)
+        self.mile_10      = mile(kwargs.get('endurance_time_10',0),kwargs.get('endurance_speed_10',0))
+        self.total_10     = kwargs.get('endurance_total_10',0)
+        self.load_10      = kwargs.get('endurance_load_10',0)
+
+        self.time_11      = kwargs.get('endurance_time_11',0)
+        self.speed_11     = kwargs.get('endurance_speed_11',0)
+        self.mile_11      = mile(kwargs.get('endurance_time_11',0),kwargs.get('endurance_speed_11',0))
+        self.total_11     = kwargs.get('endurance_total_11',0)
+        self.load_11      = kwargs.get('endurance_load_11',0)
+
+        self.time_12      = kwargs.get('endurance_time_12',0)
+        self.speed_12     = kwargs.get('endurance_speed_12',0)
+        self.mile_12      = mile(kwargs.get('endurance_time_12',0),kwargs.get('endurance_speed_12',0))
+        self.total_12     = kwargs.get('endurance_total_12',0)
+        self.load_12      = kwargs.get('endurance_load_12',0)
+
+        self.time_13      = kwargs.get('endurance_time_13',0)
+        self.speed_13     = kwargs.get('endurance_speed_13',0)
+        self.mile_13      = mile(kwargs.get('endurance_time_13',0),kwargs.get('endurance_speed_13',0))
+        self.total_13     = kwargs.get('endurance_total_13',0)
+        self.load_13      = kwargs.get('endurance_load_13',0)
+
+        self.time_14      = kwargs.get('endurance_time_14',0)
+        self.speed_14     = kwargs.get('endurance_speed_14',0)
+        self.mile_14      = mile(kwargs.get('endurance_time_14',0),kwargs.get('endurance_speed_14',0))
+        self.total_14     = kwargs.get('endurance_total_14',0)
+        self.load_14      = kwargs.get('endurance_load_14',0)
+
+        self.time_15      = kwargs.get('endurance_time_15',0)
+        self.speed_15     = kwargs.get('endurance_speed_15',0)
+        self.mile_15      = mile(kwargs.get('endurance_time_15',0),kwargs.get('endurance_speed_15',0))
+        self.total_15     = kwargs.get('endurance_total_15',0)
+        self.load_15      = kwargs.get('endurance_load_15',0)
+
+        self.time_16      = kwargs.get('endurance_time_16',0)
+        self.speed_16     = kwargs.get('endurance_speed_16',0)
+        self.mile_16      = mile(kwargs.get('endurance_time_16',0),kwargs.get('endurance_speed_16',0))
+        self.total_16     = kwargs.get('endurance_total_16',0)
+        self.load_16      = kwargs.get('endurance_load_16',0)
+
+        self.low_pressure_time_1   = kwargs.get('low_pressure_endurance_time_1',0)
+        self.low_pressure_speed_1  = kwargs.get('low_pressure_endurance_speed_1',0)
+        self.low_pressure_mile_1   = mile(kwargs.get('low_pressure_endurance_time_1',0),kwargs.get('low_pressure_endurance_speed_1',0))
+        self.low_pressure_total_1  = kwargs.get('low_pressure_endurance_total_1',0)
+        self.low_pressure_load_1   = kwargs.get('low_pressure_endurance_load_1',0)
+
+
+class Pressure(db.Model):
+    '''
+    储存高速/耐久类型以及轮胎类型对应的气压。
+    应当考虑未来需求，能够自增数据库的列
+
+    ref : 类型名称,如EH-15 ，PE-15
+    type: in ['Highspeed','Endurance']
+    '''
+    __tablename__  = 'test_pressure'
+    id                = db.Column(db.Integer,primary_key=True,nullable=False)
+    ref               = db.Column(db.String(10),unique=True,nullable=False)
+    type              = db.Column(db.String(10))
+    tire_type_STD     = db.Column(db.Integer)
+    tire_type_XL      = db.Column(db.Integer)
+    tire_type_T       = db.Column(db.Integer)
+    tire_type_LTR_C   = db.Column(db.Integer)
+    tire_type_LTR_D   = db.Column(db.Integer)
+    tire_type_LTR_E   = db.Column(db.Integer)
+    tire_type_LTR_F   = db.Column(db.Integer)
+    tire_type_LTR_G   = db.Column(db.Integer)
+    tire_type_LTR_H   = db.Column(db.Integer)
+    tire_type_LTR_J   = db.Column(db.Integer)
+    tire_type_LTR_L   = db.Column(db.Integer)
+    tire_type_LTR_N   = db.Column(db.Integer)
 
 
 class ReportDetail(db.Model):

@@ -170,8 +170,10 @@
             {%- endif %}
         {%- endmacro %}
 
-        {% for x in range(quantity) %}
-        <div class="test-number">高速测试第{{ x+1 }}份报表</div>
+
+        {% for k,v in quantity.items() %}
+            {% for i in range(v) %}
+        <div class="test-number">高速测试第{{ i+1 }}份报表,测试条件:{{ k }}</div>
 
         <table class="table table-bordered table-condensed table1">
                 <tr>
@@ -264,7 +266,7 @@
             </tr>
             <tr>
                 <td>参考标准<br>Reference</td>
-                <td>{{ ref.get('ref') }}</td>
+                <td>{{ k }}</td>
                 <td>合格条件<br>Cert.Min.</td>
                 <td></td>
                 <td>设备编号<br>Equipment Id</td>
@@ -278,7 +280,7 @@
             <div class="col-md-6">
             <!-- 高速数据表 -->
             <table class="table table-bordered table-condensed table1">
-            {% if database %}
+            {% if database.get(k) %}
                 <tr>
                     <td colspan="6">轮胎实验数据</td>
                 </tr>
@@ -288,14 +290,14 @@
                     <td>{{ value }}</td>
                 {%- endfor %}
                 </tr>
-                {% for k,v in database.items()[1:] %}
+                {% for j,x in database.get(k).items()[1:] %}
                     <tr>
-                    <td>{{ k }}</td>
-                    <td>{{ database.get(k).get('time') }}</td>
-                    <td>{{ database.get('info').get('load') * detail.get('load') / 100 }}kg</td>
-                    <td>{{ database.get(k).get('speed') }}</td>
-                    <td>{{ database.get(k).get('mile') }}</td>
-                    <td>{{ database.get(k).get('total') }}</td>
+                    <td>{{ j }}</td>
+                    <td>{{ database.get(k).get(j).get('time') }}</td>
+                    <td>{{ database.get(k).get('info').get('load') * detail.get('load') / 100 }}kg</td>
+                    <td>{{ database.get(k).get(j).get('speed') }}</td>
+                    <td>{{ database.get(k).get(j).get('mile') }}</td>
+                    <td>{{ database.get(k).get(j).get('total') }}</td>
                     </tr>
                 {% endfor %}
             {% endif %}
@@ -380,6 +382,7 @@
             </tr>
         </table>
         <!-- 多份表单循环点结束 -->
+            {% endfor %}
         {% endfor %}
         <table class="table table-bordered">
             <tr>

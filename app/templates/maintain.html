@@ -55,7 +55,7 @@
     </div>
     <!--折叠数据-->
     <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
-        <a href="" class="btn">test1</a>|
+        <a href="{{ url_for('tester') }}" class="btn">返回处理中心</a>|
         <a href="" class="btn">test2</a>|
         <a href="" class="btn">test3</a>
     </div>
@@ -68,16 +68,22 @@
             <table class="table table-bordered">
                 <tr>
                     <td><h4>高速测试数据库维护</h4></td>
-                    <td><h4>耐久测试数据库维护</h4></td>
-                </tr>
-                <tr>
                     <td>
-                        <button class="btn btn-warning" data-toggle="modal" data-target="#highspeed">插入数据</button>
+                        <button class="btn btn-success" data-toggle="modal" data-target="#highspeed">插入数据</button>
                         <button class="btn btn-warning" data-toggle="modal" data-target="#highspeed-edit">修改数据</button>
                     </td>
+                </tr>
+                <tr>
+                    <td><h4>耐久测试数据库维护</h4></td>
                     <td>
-                        <button class="btn btn-warning" data-toggle="modal" data-target="#endurance">插入数据</button>
+                        <button class="btn btn-success" data-toggle="modal" data-target="#endurance">插入数据</button>
                         <button class="btn btn-warning">修改数据</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><h4>测试气压数据库维护</h4></td>
+                    <td>
+                        <button class="btn btn-success" data-toggle="modal" data-target="#pressure">插入数据</button>
                     </td>
                 </tr>
             </table>
@@ -175,13 +181,13 @@
                                     <td colspan="3">参考标准</td>
                                     <td colspan="2"><input type="text" name="endurance_ref" class="form-control" required></td>
                                 </tr>
-                                {% set header=['阶段','时间','速度','荷重','累计里程'] %}
+                                {% set header=['阶段\n Step','时间\nHour','速度\nKm/h','荷重\n /100%','累计里程\n Km'] %}
                                 <tr>
                                     {% for h in header %}
                                         <td>{{ h }}</td>
                                     {% endfor %}
                                 </tr>
-                            {% for x in range(12) %}
+                            {% for x in range(16) %}
                                 <tr>
                                 <td>{{ x+1 }}</td>
                                 <td><input type="number" step="1" min="0" name="endurance_time_{{ x+1 }}" class="form-control"></td>
@@ -197,6 +203,32 @@
                         <input type="submit" class="btn" value="提交" name="sub3">
                         <button class="btn" data-dismiss="modal">关闭</button>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--modal pressure-->
+    <div class="modal fade" id="pressure" aria-hidden="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>气压数据库维护</h3>
+                </div>
+                <form action="" method="post">
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+
+                </div>
                 </form>
             </div>
         </div>
@@ -248,7 +280,7 @@
                     'value="' + d['info']['load'] + '"></td>';
             str += '<td><input type="text" class="form-control" name="c4"' +
                     'value="' + d['info']['remark'] + '"></td>';
-            str += '</tr>'
+            str += '</tr>';
 
             for(i=1;i<16;i++){
                 str += '<tr>';
@@ -260,6 +292,8 @@
                 str += '</tr>';
                 console.log(str)
             };
+
+            str += '</table>';
 
             $('.modal-footer-highspeed-edit').append(
                 '<input type="submit" class="btn btn-default" name="sub2">' +
@@ -291,20 +325,21 @@
         str += '<tr><td colspan="3">测试风压</td><td colspan="2"><input type="number" step="1" class="form-control"></td></tr>';
         for(var i=1;i<3;i++){
             str += '<tr><td>' + i +
-                    '</td><td><input type="number" name="low_pressure_endurance_time_"' + i +
-                    ' class="form-control"></td><td><input type="number" step="0.1" class="form-control" name="low_pressure_endurance_speed_' + i +
-                    '"></td><td><input type="number" class="form-control" name="low_pressure_endurance_load_"' + i +
-                    '></td><td><input type="number" step="0.01" class="form-control" name="low_pressure_endurance_total_' + i +
+                    '</td><td><input type="number" name="low_pressure_endurance_time_' + i +
+                    '" class="form-control"></td><td><input type="number" step="0.1" class="form-control" name="low_pressure_endurance_speed_' + i +
+                    '"></td><td><input type="number" class="form-control" name="low_pressure_endurance_load_' + i +
+                    '"></td><td><input type="number" step="0.01" class="form-control" name="low_pressure_endurance_total_' + i +
                     '"></td></tr>'
         }
         str += '</table>';
         $('#endurance_table').append(str);
     });
-    //
+    //取消勾选移除元素
     $("#low_pressure_endurance").on('ifUnchecked',function(event){
         console.log(event.type + 'callback');
         $('#low_pressure_endurance_table').remove();
     });
+
 </script>
 </body>
 </html>

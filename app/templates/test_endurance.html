@@ -122,7 +122,7 @@
 <div class="container">
     <h3>外胎耐久性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
     <form action="" method="post">
-        <div class="table-responsive">
+        <div class="table">
         <table class="table table-bordered table-condensed table1">
             <tr>
                 <td colspan="6">基础信息</td>
@@ -168,11 +168,253 @@
                 <td>{{ detail.get('inflate') }}kpa</td>
             </tr>
         </table>
+
+        {% for k,v in quantity.items() %}
+            {% for i in range(v) %}
+        <div class="test-number">耐久测试第{{ i+1 }}份报表,测试条件:{{ k }}</div>
+
+        <table class="table table-bordered table-condensed table1">
+                <tr>
+                    <td colspan="11">试验前尺寸</td>
+                </tr>
+                <tr>
+                    <td>测试风压<br>Pressure</td>
+                    {{ input_1(name='dim_test_inflate',colspan=2) }}
+                    <td>测试轮辋<br>Rim</td>
+                    {{ input_1(name='dim_test_rim_code',colspan=2) }}
+                    <td>测试时间<br>Time</td>
+                    {{ input_2(name='dim_test_finish_time',colspan=2) }}
+                    <td >技术员<br>Tech.</td>
+                    {{ input_1(name='dim_test_operator') }}
+                </tr>
+                <tr>
+                    <td>项目<br>Item</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>平均值<br>Avg.</td>
+                    <td>基准<br>SPEC</td>
+                    <td>判定<br>Judgement</td>
+                    <td>量具编号<br>Gauge</td>
+                </tr>
+                <tr>
+                    <td>重量<br>Weight</td>
+                    {{ input_1(name='dim_test_tire_weight',colspan=7) }}
+                    {{ input_1(name='dim_test_spec_weight') }}
+                    <td></td>
+                    {{ input_1(name='dim_test_weight_gauge') }}
+                </tr>
+                <tr>
+                    <td>外径<br>Diameter</td>
+                    {{ input_1(name='dim_test_tire_out_dia',colspan=7) }}
+                    {{ input_1(name='dim_test_tire_spec_dia') }}
+                    <td></td>
+                    {{ input_1(name='dim_test_tire_dia_gauge') }}
+                </tr>
+                <tr>
+                    <td>总宽<br>Overall Width</td>
+                    {{ input_1(name='dim_test_tire_overall_width_1') }}
+                    {{ input_1(name='dim_test_tire_overall_width_2') }}
+                    {{ input_1(name='dim_test_tire_overall_width_3') }}
+                    {{ input_1(name='dim_test_tire_overall_width_4') }}
+                    {{ input_1(name='dim_test_tire_overall_width_5') }}
+                    {{ input_1(name='dim_test_tire_overall_width_6') }}
+                    <td></td>
+                    {{ input_1(name='dim_test_tire_overall_width_spec') }}
+                    <td></td>
+                    {{ input_1(name='dim_test_tire_overall_width_gauge') }}
+                </tr>
+                <tr>
+                    <td>断宽<br>Section Width</td>
+                    {{ input_1(name='dim_test_tire_section_width_1') }}
+                    {{ input_1(name='dim_test_tire_section_width_2') }}
+                    {{ input_1(name='dim_test_tire_section_width_3') }}
+                    {{ input_1(name='dim_test_tire_section_width_4') }}
+                    {{ input_1(name='dim_test_tire_section_width_5') }}
+                    {{ input_1(name='dim_test_tire_section_width_6') }}
+                    <td></td>
+                    {{ input_1(name='dim_test_tire_section_width_spec') }}
+                    <td></td>
+                    {{ input_1(name='dim_test_tire_section_width_gauge')}}
+                </tr>
+                <tr>
+                    <td colspan="5">尺寸测量判定<br>Judgement</td>
+                    <td colspan="6">
+                        <input type="radio" name="dim_judge">合格
+                        <input type="radio" name="dim_judge">不合格
+                    </td>
+                </tr>
+        </table>
+        <table class="table table-bordered table-condensed table1">
+            <tr>
+                <td colspan="8">试验后轮胎状态分析</td>
+            </tr>
+            <tr>
+                <td>测试风压<br>Pressure</td>
+                <td></td>
+                <td>测试轮辋<br>Rim</td>
+                <td></td>
+                <td>测试时间<br>Test Date</td>
+                {{ input_2(name='endurance_test_date')}}
+                <td>环境温度<br>Temperature</td>
+                {{ input_1(name='endurance_test_temp')}}
+            </tr>
+            <tr>
+                <td>参考标准<br>Reference</td>
+                <td>{{ k }}</td>
+                <td>合格条件<br>Cert.Min.</td>
+                <td></td>
+                <td>设备编号<br>Equipment Id</td>
+                {{ input_1(name='endurance_test_equipment_id') }}
+                <td>技术员<br>Tech.</td>
+                {{ input_1(name='endurance_test_operator') }}
+            </tr>
+        </table>
+
+        <div class="row">
+            <div class="col-md-6">
+            <!-- 耐久数据表 -->
+            <table class="table table-bordered table-condensed table1">
+            {% if database %}
+                <tr>
+                    <td colspan="6">轮胎实验数据</td>
+                </tr>
+                {% set td_header = ['STEP','TIME','LOAD','SPEED','MILE','TOTAL'] %}
+                <tr>
+                {% for value in td_header -%}
+                    <td>{{ value }}</td>
+                {%- endfor %}
+                </tr>
+                {% for j,x in database.get(k).items()[1:] %}
+                    <tr>
+                    <td>{{ j }}</td>
+                    <td>{{ database.get(k).get(j).get('time') }}</td>
+                    <td>{{ database.get(k).get(j).get('load') * detail.get('load') / 100 }}kg</td>
+                    <td>{{ database.get(k).get(j).get('speed') }}</td>
+                    <td>{{ database.get(k).get(j).get('mile') }}</td>
+                    <td>{{ database.get(k).get(j).get('total') }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-bordered table-condensed table1">
+                    <tr>
+                        <td colspan="8">试验后轮胎状态</td>
+                    </tr>
+                    <tr>
+                        <td>项目<br><small>Item</small></td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>平均值<br><small>Avg</small></td>
+                    </tr>
+                    <tr>
+                        <td>外径<br><small>Dia.</small></td>
+                        {{ input_1(name='highspeed_after_test_dia',colspan=7) }}
+                    </tr>
+                    <tr>
+                        <td>总宽<br><small>Overall Width</small></td>
+                        {{ input_1(name='endurance_after_test_ow_1') }}
+                        {{ input_1(name='endurance_after_test_ow_2') }}
+                        {{ input_1(name='endurance_after_test_ow_3') }}
+                        {{ input_1(name='endurance_after_test_ow_4') }}
+                        {{ input_1(name='endurance_after_test_ow_5') }}
+                        {{ input_1(name='endurance_after_test_ow_6') }}
+                        {{ input_1(name='endurance_after_test_ow_avg') }}
+                    </tr>
+                    <tr>
+                        <td>断宽<br><small>Section Width</small></td>
+                        {{ input_1(name='endurance_after_test_sw_1') }}
+                        {{ input_1(name='endurance_after_test_ow_2') }}
+                        {{ input_1(name='endurance_after_test_ow_3') }}
+                        {{ input_1(name='endurance_after_test_ow_4') }}
+                        {{ input_1(name='endurance_after_test_ow_5') }}
+                        {{ input_1(name='endurance_after_test_ow_6') }}
+                        {{ input_1(name='endurance_after_test_ow_avg') }}
+                    </tr>
+                    <tr>
+                        <td>总阶段<br><small>Total Phases</small></td>
+                        {{ input_1(name='endurance_total_phases',type='number') }}
+                        <td>最后阶段里程<br><small>Last Phases km</small></td>
+                        {{ input_1(name='endurance_last_phases',colspan=2) }}
+                        <td>总里程(千米)<br><small>Total km</small></td>
+                        {{ input_1(name='endurance_total_km',colspan=2) }}
+                    </tr>
+                    <tr>
+                        <td colspan="3">结果判定<br><small>Result Judgement</small></td>
+                        <td colspan="5">
+                            <input type="radio" name="endurance_test_result">合格
+                            <input type="radio" name="endurance_test_result">不合格
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">分析代码<br><small>Analysis Code</small></td>
+                        {{ input_1(name='endurance_analy_code',colspan=2) }}
+                        <td colspan="2">二期分析代码<br><small>Secondary Analysis Code</small></td>
+                        {{ input_1(name='endurance_analy_second_code',colspan=2) }}
+                    </tr>
+                    <tr>
+                        <td colspan="2">分析位置<br><small>Analy Location</small></td>
+                        {{ input_1(name='endurance_analy_location',colspan=2) }}
+                        <td colspan="2">二期分析位置<br><small>Secondary Analy Location</small></td>
+                        {{ input_1(name='endurance_analy_second_location',colspan=2) }}
+                    </tr>
+                </table>
+            </div>
+        </div>
+            {% endfor %}
+        {% endfor %}
+
+        <table class="table table-bordered">
+            <tr>
+                <td rowspan="2">备注</td>
+                <td rowspan="2">
+                    {{ data.get('highspeed_remark') or '<textarea name="endurance_remark" id="" cols="10" rows="4" class="form-control"></textarea>'|safe }}
+                </td>
+                <td>核定<br><small>Approval</small></td>
+                <td>审核<br><small>Aduditing</small></td>
+                <td>报告人<br><small>Report</small></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Jim Ge</td>
+            </tr>
+        </table>
+        <input type="submit" class="btn btn-success" name="save" value="Save">
+        <div id="document_ref">QR-03-011-06</div>
         </div>
     </form>
 </div>
 
-
+<div class="copyright" id="copyright">
+    <div class="container-fluid">
+        <div>Cooper(Kunshan)Tire Co.,Ltd.</div>
+        <div>固铂(昆山)轮胎有限公司</div>
+        <table class="table" id="copyright_table">
+            <tr>
+                <td>
+                <div>CONFIDENTIAL</div>
+                <div>COMPETIVE COMMERICAL INFORMATION</div>
+                <div>Access limited to authorized personnel|Copyright@Unpublished</div>
+                </td>
+                <td>
+                <div>机密的</div>
+                <div>有竞争力的商业信息</div>
+                <div>仅限授权人员访问|版权所有@尚未发表</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 <script>
     $(".datetime").datetimepicker({
         format:'yyyy-mm-dd hh:ii',

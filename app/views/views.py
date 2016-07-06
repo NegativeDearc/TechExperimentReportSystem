@@ -4,10 +4,9 @@ from app import app, db
 from app.models.dbModels import usrPwd, requestForms, testContent, Highspeed, ReportDetail, Endurance
 from app.ext.test_info import testInfo
 from app.ext.request_detail import requestDetail
-from app.ext.formatted_dict import formatted_dict
-from app.ext.db_to_table import data_to_table
 from app.ext.test_staic import total_static_test_content, static_test_request_detail
-from app.ext.test_highspeed import highspeed_test_ref, highspeed_test_quantity
+from app.ext.test_highspeed import highspeed_test_quantity, data_to_table, formatted_dict
+from app.ext.test_endurance import data_to_tb, endurance_test_quantity
 from urlparse import urlparse, urljoin
 from flask import request, session, abort, render_template, \
     redirect, flash, url_for, send_from_directory, jsonify
@@ -100,7 +99,8 @@ def maintain():
             # 考虑到数据修改的可能性，db.session.add 应改为 db.session.merge
             pass
         if request.form.get('sub3'):
-            pass
+            db.session.add(Endurance(request.form))
+            db.session.commit()
         if request.form.get('sub4'):
             pass
         return redirect(url_for('maintain'))
@@ -111,7 +111,6 @@ def maintain():
 @app.route('/report/highspeed/<uuid>/', methods=['GET', 'POST'])
 def test_highspeed(uuid):
     detail   = static_test_request_detail(uuid)
-    ref      = highspeed_test_ref(uuid)
     quantity = highspeed_test_quantity(uuid)
 
     pickled_data = db.session.query(ReportDetail.test_data). \
@@ -124,7 +123,7 @@ def test_highspeed(uuid):
     else:
         data = {}
     try:
-        database = data_to_table(ref.get('ref'))
+        database = {x:data_to_table(x) for x in quantity.keys()}
     except Exception:
         database = {}
 
@@ -148,7 +147,6 @@ def test_highspeed(uuid):
     return render_template('test_highspeed.html',
                            detail=detail,
                            data=data,
-                           ref=ref,
                            database=database,
                            quantity=quantity)
 
@@ -156,11 +154,29 @@ def test_highspeed(uuid):
 # 耐久测试地址
 @app.route('/report/endurance/<uuid>/',methods=['GET','POST'])
 def test_endurance(uuid):
+    quantity     = endurance_test_quantity(uuid)
     detail       = static_test_request_detail(uuid)
-    data         = {}
+    pickled_data = db.session.query(ReportDetail.test_data). \
+        filter(ReportDetail.uuid == uuid,
+               ReportDetail.test_content == 'highspeed'). \
+        first()
+
+    if pickled_data:
+        data = loads(pickled_data.test_data)
+    else:
+        data = {}
+    try:
+        database = {x : data_to_tb(x) for x in quantity.keys()}
+    except Exception:
+        database = {}
+
+    if request.method == 'POST':
+        pass
     return render_template('test_endurance.html',
                            detail=detail,
-                           data=data)
+                           data=data,
+                           quantity=quantity,
+                           database=database)
 
 
 # 静态实验测试地址
@@ -215,8 +231,8 @@ def get_highspeed_lst():
 
 @app.route('/api/v1.0/endurance/')
 def get_endurance_lst():
-    df = db.session.query(Endurance.ref).all()
-    return jsonify(df)
+    df = db.session.query(Endurance.ref,Endurance.ref).all()
+    return jsonify(df),200
 
 
 @app.route('/api/v1.0/highspeed/database/')
@@ -232,4 +248,10 @@ def get_highspeed_db():
 
 @app.route('/api/v1.0/endurance/database/')
 def get_endurance_db():
-    pass
+    ref = request.args.get('term', '')
+    # 整理数据，使其可以json化
+    try:
+        x = data_to_tb(ref)
+        return jsonify({ref: x})
+    except Exception:
+        return abort(500)
