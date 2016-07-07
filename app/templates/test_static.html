@@ -263,7 +263,7 @@
                 <td>测试风压<br>Pressure</td>
                 <td id="unseat_test_pressure">{{ data.get('unseat_test_pressure') or '<input type="text" name="unseat_test_pressure" class="form-control">'|safe }}</td>
                 <td>测试轮辋<br>Rim</td>
-                <td></td>
+                <td id="unseat_test_dim">{{ data.get('unseat_test_pressure') or '<input type="text" name="unseat_test_dim" class="form-control">'|safe }}</td>
                 <td>测试时间<br>Time</td>
                 <td id="unseat_test_time">{{ data.get('unseat_test_time') or '<input type="text" name="unseat_test_time" class="form-control datetime">'|safe }}</td>
                 <td>技术员<br>Tech.</td>
@@ -331,7 +331,7 @@
                 <td>测试风压<br>Pressure</td>
                 <td id="plunger_test_pressure">{{ data.get('plunger_test_pressure') or '<input type="text" name="plunger_test_pressure" class="form-control">'|safe }}</td>
                 <td>测试轮辋<br>Dim</td>
-                <td></td>
+                <td id="plunger_test_dim">{{ data.get('plunger_test_dim') or '<input type="text" name="plunger_test_dim" class="form-control">'|safe }}</td>
                 <td>测试时间<br>Time</td>
                 <td id="plunger_test_time">{{ data.get('plunger_test_time') or '<input type="text" name="plunger_test_time" class="form-control datetime">'|safe }}</td>
                 <td>技术员<br>Tech.</td>
@@ -400,7 +400,7 @@
             </tr>
             <tr>
                 <td rowspan="2">备注<br>Remark</td>
-                <td colspan="4" rowspan="2" id="remark">{{ data.get('remark') or  '<textarea name="remark" id="" cols="30" rows="3" class="form-control"></textarea>'|safe }}</td>
+                <td colspan="4" rowspan="2" id="remark">{{ data.get('remark') or '<textarea name="remark" id="" cols="30" rows="3" class="form-control"></textarea>'|safe }}</td>
                 <td>核定<br>Approval</td>
                 <td>审核<br>Auditing</td>
                 <td>报告人<br>Reporter</td>

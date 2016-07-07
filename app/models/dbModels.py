@@ -9,7 +9,6 @@ from cPickle import dumps, loads
 import datetime
 
 
-
 class usrPwd(db.Model):
     '''
     存储用户名和密码的表
@@ -62,7 +61,7 @@ class requestForms(db.Model):
     size    = db.Column(db.String(30),nullable=False)
     req_num = db.Column(db.String(50),nullable=False,unique=True)
     brand   = db.Column(db.String(50),nullable=False)
-    temp    = db.Column(db.Float(10),nullable=False)
+    temp    = db.Column(db.String(10),nullable=False)            # A or B
     load    = db.Column(db.Integer,nullable=False)
     inflate = db.Column(db.Integer,nullable=False)
     # 备注
@@ -160,6 +159,12 @@ class testContent(db.Model):
         if form.getlist('highspeed'):
             # zip会对所有可递归对象解包，字符串会被逐字分解，是个隐秘的出错点，在这里嵌套一层list
             for k,v in zip(form.getlist('highspeed'),form.getlist('highspeed_quantity')):
+                db.session.add(testContent(uuid_id,request_id,k,v,'C',self.if_test))
+        else:
+            pass
+
+        if form.getlist('highspeed_1'):
+            for k,v in zip(form.getlist('highspeed_1'),form.getlist('highspeed_quantity_1')):
                 db.session.add(testContent(uuid_id,request_id,k,v,'C',self.if_test))
         else:
             pass

@@ -136,7 +136,7 @@
                         </td>
                         <td>温度等级</td>
                         <td>
-                            <input type="text" class="form-control" required name="temp">
+                            <input type="text" class="form-control" required name="temp" placeholder="A or B">
                         </td>
                     </tr>
                     <tr>
@@ -174,21 +174,34 @@
                         <td colspan="4" class="warning">动态性能</td>
                     </tr>
                     <tr>
-                        <td>高速性能</td>
+                        <td>高速性能<button id="h1_add" onclick="return false">+</button></td>
                         <td>
-                            <select name="highspeed" id="highspeed"  multiple="multiple" class="select-form form-control">
+                            <select name="highspeed" id=""  multiple="multiple" class="select-form form-control highspeed">
                             </select>
                         </td>
                         <td>数量</td>
                         <td>
-                            <select name="highspeed_quantity" id="highspeed_quantity" class="select-form form-control" multiple="multiple">
+                            <!-- bug:相同元素无法多选 -->
+                            <select name="highspeed_quantity" id="" class="select-form form-control highspeed_quantity" multiple="multiple">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr id="h1" style="display: none">
+                        <td>高速性能</td>
+                        <td>
+                            <select name="highspeed_1" multiple="multiple" class="select-form form-control highspeed" style="width: 100%">
+                            </select>
+                        </td>
+                        <td>数量</td>
+                        <td>
+                            <select name="highspeed_quantity_1" class="select-form form-control highspeed_quantity" multiple="multiple" style="width: 100%">
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td>耐久性能</td>
                         <td>
-                            <select name="endurance" id="endurance" class="select-form form-control" multiple="multiple">
+                            <select name="endurance" id="" class="select-form form-control endurance" multiple="multiple">
                             </select>
                         </td>
                         <td>数量</td>
@@ -246,7 +259,7 @@
             success: function (data) {
                 console.log(data);
                 $.each(data,function(ref,level){      //必须要带参数
-                    $('#highspeed').append(
+                    $('.highspeed').append(
                             '<option value="' + ref +'">' +
                             ref+'('+level+')'+'</option>'
                     )
@@ -265,7 +278,7 @@
             success: function (data) {
                 console.log(data);
                 $.each(data,function(ref){      //必须要带参数
-                    $('#endurance').append(
+                    $('.endurance').append(
                             '<option value="' + ref +'">' +
                             ref+'</option>'
                     )
@@ -297,22 +310,26 @@
     });
     //下拉多选
     $(document).ready(function(){
-        $("#endurance").select2({
+        $(".endurance").select2({
             placeholder:'选择耐久测试条件',
             maximumSelectionLength: 2
         });
     });
     $(document).ready(function(){
-        $("#highspeed_quantity").select2({
+        $(".highspeed_quantity").select2({
             placeholder:'选择测试条数,输入数字并回车',
             tags:true,
             tokenSeparators:[',','']
         });
     });
     $(document).ready(function(){
-        $("#highspeed").select2({
+        $(".highspeed").select2({
             placeholder:'选择高速测试条件'
         });
+    });
+    //add highspeed row
+    $('#h1_add').click(function(){
+        $('#h1').toggle(200);
     });
 </script>
 </body>
