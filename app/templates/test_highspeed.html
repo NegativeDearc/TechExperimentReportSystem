@@ -169,12 +169,29 @@
                 </td>
             {%- endif %}
         {%- endmacro %}
+        {# input 第三种类型宏,用于计算平均值#}
+        {% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='',readonly=False)-%}
+            {% if data.get(prefix + '_' + name) -%}
+                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}" class="{{ cls_td }}">
+                    {{ data.get(prefix + '_' + name) }}
+                </td>
+            {% elif not readonly %}
+                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
+                    <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+                </td>
+            {% elif readonly %}
+                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
+                    <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}" readonly>
+                </td>
+            {%- endif %}
+        {%- endmacro %}
 
-
+        {% set LETTERS='ABCDEFG' %}
         {% for k,v in quantity.items() %}
-            {% for i in range(v) %}
-        <div class="test-number">高速测试第{{ i+1 }}份报表,测试条件:{{ k }}</div>
-
+            {% for x in range(v) %}
+            {% set a,b,c=x|safe,k,x+1 %}
+            {% set x= a+'_'+b %}
+        <div class="test-number">高速测试第{{ c }}份报表,测试条件:{{ k }}</div>
         <table class="table table-bordered table-condensed table1">
                 <tr>
                     <td colspan="11">试验前尺寸</td>
@@ -218,26 +235,26 @@
                 </tr>
                 <tr>
                     <td>总宽<br>Overall Width</td>
-                    {{ input_1(name='dim_test_tire_overall_width_1',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_overall_width_2',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_overall_width_3',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_overall_width_4',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_overall_width_5',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_overall_width_6',prefix=x|safe) }}
-                    <td></td>
+                    {{ input_3(name='dim_test_tire_overall_width_1',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_overall_width_2',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_overall_width_3',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_overall_width_4',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_overall_width_5',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_overall_width_6',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_overall_width_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_overall_width_spec',prefix=x|safe) }}
                     <td></td>
                     {{ input_1(name='dim_test_tire_overall_width_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
                     <td>断宽<br>Section Width</td>
-                    {{ input_1(name='dim_test_tire_section_width_1',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_section_width_2',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_section_width_3',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_section_width_4',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_section_width_5',prefix=x|safe) }}
-                    {{ input_1(name='dim_test_tire_section_width_6',prefix=x|safe) }}
-                    <td></td>
+                    {{ input_3(name='dim_test_tire_section_width_1',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_section_width_2',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_section_width_3',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_section_width_4',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_section_width_5',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_section_width_6',prefix=x|safe) }}
+                    {{ input_3(name='dim_test_tire_section_width_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_section_width_spec',prefix=x|safe) }}
                     <td></td>
                     {{ input_1(name='dim_test_tire_section_width_gauge',prefix=x|safe)}}
@@ -324,23 +341,23 @@
                     </tr>
                     <tr>
                         <td>总宽<br><small>Overall Width</small></td>
-                        {{ input_1(name='highspeed_after_test_ow_1',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_2',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_3',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_4',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_5',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_6',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_avg',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_1',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_2',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_3',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_4',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_5',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_6',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
                     </tr>
                     <tr>
                         <td>断宽<br><small>Section Width</small></td>
-                        {{ input_1(name='highspeed_after_test_sw_1',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_2',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_3',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_4',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_5',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_6',prefix=x|safe) }}
-                        {{ input_1(name='highspeed_after_test_ow_avg',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_sw_1',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_2',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_3',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_4',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_5',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_6',prefix=x|safe) }}
+                        {{ input_3(name='highspeed_after_test_ow_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
                     </tr>
                     <tr>
                         <td>总阶段<br><small>Total Phases</small></td>
@@ -377,8 +394,8 @@
                 <td colspan="2">分析注解<small>Anyalysis Comments</small></td>
             </tr>
             <tr>
-                <td>1占位</td>
-                <td>2占位</td>
+                <td><img src="" alt="1占位"></td>
+                <td><img src="" alt="2占位"></td>
             </tr>
         </table>
         <!-- 多份表单循环点结束 -->
@@ -441,24 +458,59 @@
             alert('该单元格无法修改');
             return false;
         } else {
-            //若获取到id值传入构造的input中作为name
-            var td_id = $(this).attr('id');
-            //原值
-            var old_value = $(this)[0].innerText;
-            //原class
-            console.log(td_id);
-            console.log(old_value);
-            if (td_id.indexOf('time') != -1){
-                str = '<input type="text" class="form-control datetime" name="' +
-                    td_id + '" value="' + old_value + '">';
+            try {
+                var nodename = $(this).children()[0].nodeName;
+            } catch(e) {
+                var nodename = 'undefined';
+            };
+            if( nodename == 'INPUT' || $(this).attr('class') == 'avg1') {
+                /*
+                如果没有子节点那么就会出错，无法执行下一步的判断
+                td中如果嵌套了input也不提供修改,如果是avg1的机器计算的也不提供修改
+                知识点：1.jquery对象和原生js对象的转换 2.判断节点的方法
+                */
+                //避免干扰
+                //alert('该单元格已经嵌套INPUT,无法再次生成INPUT');
+                return false;
             } else {
-                str = '<input type="text" class="form-control" name="' +
-                    td_id + '" value="' + old_value + '">';
+                //若获取到id值传入构造的input中作为name
+                var td_id = $(this).attr('id');
+                //原值
+                var old_value = $(this)[0].innerText;
+                //原class
+                //console.log(td_id);
+                //console.log(old_value);
+                if (td_id.indexOf('time') != -1){
+                    str = '<input type="text" class="form-control datetime" name="' +
+                        td_id + '" value="' + old_value + '">';
+                } else {
+                    str = '<input type="text" class="form-control" name="' +
+                        td_id + '" value="' + old_value + '">';
+                }
+                //console.log(str);
+                $(this).html(str);
             }
-            console.log(str);
-            $(this).html(str);
         }
     });
+    /*
+    求平均值
+     */
+    $(".avg").bind("input propertychange oninput", function(){
+        $(".avg1").each(function(){
+            var x = $(this).siblings().children('input.avg');
+            var sum=0;
+            for(var i=0;i<6;i++){
+                try{
+                    sum += Number(x[i].value);
+                } catch(e) {
+                    //console.log(e);
+                    sum += 0;
+                };
+                console.log(sum);
+            };
+            $(this).children().attr('value',(sum/6).toFixed(2));
+        });
+    })
 </script>
 </body>
 </html>

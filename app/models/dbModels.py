@@ -5,17 +5,16 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from cPickle import dumps, loads
-
 import datetime
 
 
 class usrPwd(db.Model):
-    '''
+    """
     存储用户名和密码的表
     user:    用户工号
     password:默认111111
     group:   分组，管理员0，开发组1，测试组2
-    '''
+    """
     __tablename__ = 'USER_PASSWORD'
     user     = db.Column(db.Text(50), nullable=False, unique=True, primary_key=True)
     password = db.Column(db.Text(50), nullable=False)
@@ -39,13 +38,13 @@ class usrPwd(db.Model):
 
 
 class requestForms(db.Model):
-    '''
+    """
     记录/developer提交的数据
     id:uuid 生成
     name: 登陆的用户名
 
     本数据库一次直生成一条记录,req_num不可重复
-    '''
+    """
     __tablename__ = 'requestForm'
 
     # 初始化内容
@@ -94,14 +93,14 @@ class requestForms(db.Model):
 
 
 class testContent(db.Model):
-    '''
+    """
     uuid 对应的测试项目
     test_type: A 静态测试
                B 耐久测试
                C 高速测试
 
     本数据库一次会插入多条记录,目前仍有问题,数据有可能被重复插入
-    '''
+    """
     __tablename__ = 'testForm'
 
     id           = db.Column(db.Integer,nullable=False,unique=True,primary_key=True)
@@ -124,12 +123,12 @@ class testContent(db.Model):
         self.if_test      = test
 
     def add_data(self,form,session):
-        '''
+        """
         批量插入测试内容
         :param session: 来自session
         :param form: 来自request.form;
         :return:
-        '''
+        """
         uuid_id   = session.get('uuid_id')
         request_id = form.get('request_id')
         # 若已经存在request_id,则产生错误阻止插入数据
@@ -591,13 +590,13 @@ class Endurance(db.Model):
 
 
 class Pressure(db.Model):
-    '''
+    """
     储存高速/耐久类型以及轮胎类型对应的气压。
     应当考虑未来需求，能够自增数据库的列
 
     ref : 类型名称,如EH-15 ，PE-15
     type: in ['Highspeed','Endurance']
-    '''
+    """
     __tablename__  = 'test_pressure'
     id                = db.Column(db.Integer,primary_key=True,nullable=False)
     ref               = db.Column(db.String(10),unique=True,nullable=False)
@@ -617,20 +616,27 @@ class Pressure(db.Model):
 
 
 class ReportDetail(db.Model):
-    '''
+    """
     存储测试记录的表
     =============
     每次开发组用户提交了测试需求之后，本表自动生成一份记录,记录其uuid和测试数据已经测试名目，
     其中test_data，存储pickle之后的json(dict)文件，uuid作为唯一标识符
-    '''
+    但pickle化的数据并不安全
+    """
     __tablename__ = 'reportDetail'
 
     id           = db.Column(db.Integer,primary_key=True,nullable=False)
+    req_num      = db.Column(db.String(20),nullable=False)
     uuid         = db.Column(db.String(20),nullable=False)
     test_content = db.Column(db.String(10),nullable=False,unique=True)
-    test_data    = db.Column(db.BLOB)
+    test_data    = db.Column(db.BLOB)               # 后续考虑采用json，研究下sqlite json插件
+    test_date    = db.Column(db.DATE,nullable=False)
+    update_date  = db.Column(db.DATE,nullable=False)
 
-    def __init__(self,uuid=None,test_content=None,test_data=None):
+    def __init__(self,req_num=None,uuid=None,test_content=None,test_data=None,update_date=None):
+        self.req_num      = req_num
         self.uuid         = uuid
         self.test_content = test_content
         self.test_data    = test_data
+        self.test_date    = datetime.date.today()
+        self.update_date  = update_date

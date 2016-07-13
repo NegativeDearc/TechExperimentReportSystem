@@ -12,6 +12,7 @@ from flask import request, session, abort, render_template, \
     redirect, flash, url_for, send_from_directory, jsonify
 from uuid import uuid1
 from cPickle import dumps, loads
+import datetime
 
 
 def csrf_protect():
@@ -110,8 +111,8 @@ def maintain():
 # 高速实验测试地址
 @app.route('/report/highspeed/<uuid>/', methods=['GET', 'POST'])
 def test_highspeed(uuid):
-    detail   = static_test_request_detail(uuid)
-    quantity = highspeed_test_quantity(uuid)
+    detail           = static_test_request_detail(uuid)
+    quantity,req_num = highspeed_test_quantity(uuid)
 
     pickled_data = db.session.query(ReportDetail.test_data). \
         filter(ReportDetail.uuid == uuid,
@@ -128,18 +129,25 @@ def test_highspeed(uuid):
         database = {}
 
     if request.method == 'POST':
+        # 更新pickle化的数据
         data.update({str(x):y for x,y in request.form.items()})
         try:
             db.session.add(
-                ReportDetail(uuid=uuid, test_content='highspeed', test_data=dumps(data))
-            )
+                ReportDetail(req_num=req_num,
+                             uuid=uuid,
+                             test_content='highspeed',
+                             test_data=dumps(data),
+                             update_date=datetime.date.today()
+                             ))
             db.session.commit()
         except Exception:
             db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
             db.session.query(ReportDetail).\
                 filter(ReportDetail.test_content == 'highspeed',
                        ReportDetail.uuid == uuid).\
-                update({ReportDetail.test_data: dumps(data)})
+                update({ReportDetail.test_data: dumps(data),
+                        ReportDetail.update_date:datetime.date.today()
+                        })
             db.session.commit()
         finally:
             db.session.close()
@@ -154,11 +162,11 @@ def test_highspeed(uuid):
 # 耐久测试地址
 @app.route('/report/endurance/<uuid>/',methods=['GET','POST'])
 def test_endurance(uuid):
-    quantity     = endurance_test_quantity(uuid)
-    detail       = static_test_request_detail(uuid)
-    pickled_data = db.session.query(ReportDetail.test_data). \
+    quantity,req_num = endurance_test_quantity(uuid)
+    detail           = static_test_request_detail(uuid)
+    pickled_data     = db.session.query(ReportDetail.test_data). \
         filter(ReportDetail.uuid == uuid,
-               ReportDetail.test_content == 'highspeed'). \
+               ReportDetail.test_content == 'endurance'). \
         first()
 
     if pickled_data:
@@ -171,7 +179,29 @@ def test_endurance(uuid):
         database = {}
 
     if request.method == 'POST':
-        pass
+        # 更新pickle化的数据
+        data.update({str(x):y for x,y in request.form.items()})
+        try:
+            db.session.add(
+                ReportDetail(req_num=req_num,
+                             uuid=uuid,
+                             test_content='endurance',
+                             test_data=dumps(data),
+                             update_date=datetime.date.today())
+            )
+            db.session.commit()
+        except Exception:
+            db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
+            db.session.query(ReportDetail).\
+                filter(ReportDetail.test_content == 'endurance',
+                       ReportDetail.uuid == uuid).\
+                update({ReportDetail.test_data: dumps(data),
+                        ReportDetail.update_date:datetime.date.today()
+                        })
+            db.session.commit()
+        finally:
+            db.session.close()
+            return redirect(url_for('test_endurance',uuid=uuid))
     return render_template('test_endurance.html',
                            detail=detail,
                            data=data,
@@ -182,9 +212,9 @@ def test_endurance(uuid):
 # 静态实验测试地址
 @app.route('/report/static/<uuid>/', methods=['GET', 'POST'])
 def test_static(uuid):
-    total        = total_static_test_content(uuid)
-    detail       = static_test_request_detail(uuid)
-    pickled_data = db.session.query(ReportDetail.test_data). \
+    total,req_num = total_static_test_content(uuid)
+    detail        = static_test_request_detail(uuid)
+    pickled_data  = db.session.query(ReportDetail.test_data). \
         filter(ReportDetail.uuid == uuid,
                ReportDetail.test_content == 'static'). \
         first()
@@ -198,7 +228,11 @@ def test_static(uuid):
         data.update({str(x):y for x,y in request.form.items()})
         try:
             db.session.add(
-                ReportDetail(uuid=uuid, test_content='static', test_data=dumps(data))
+                ReportDetail(req_num=req_num,
+                             uuid=uuid,
+                             test_content='static',
+                             test_data=dumps(data),
+                             update_date=datetime.date.today())
             )
             db.session.commit()
         except Exception:
@@ -206,7 +240,9 @@ def test_static(uuid):
             db.session.query(ReportDetail).\
                 filter(ReportDetail.test_content == 'static',
                        ReportDetail.uuid == uuid).\
-                update({ReportDetail.test_data: dumps(data)})
+                update({ReportDetail.test_data: dumps(data),
+                        ReportDetail.update_date:datetime.date.today()
+                        })
             db.session.commit()
         finally:
             db.session.close()

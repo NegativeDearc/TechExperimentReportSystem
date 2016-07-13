@@ -13,7 +13,11 @@ def highspeed_test_quantity(uuid):
         filter(testContent.uuid == uuid,
                testContent.test_type == 'C').all()
     data = dict(quantity)
-    return data
+
+    res = db.session.query(testContent.req_num).\
+        filter(testContent.uuid == uuid,
+               testContent.test_type == 'C').first()
+    return data,res.req_num
 
 
 def data_to_table(ref):

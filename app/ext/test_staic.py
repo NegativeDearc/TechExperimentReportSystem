@@ -15,7 +15,11 @@ def total_static_test_content(uuid):
         all()
     # 解包
     total = list(chain(*total))
-    return total
+    res = db.session.query(testContent.req_num).\
+        filter(testContent.uuid == uuid,
+               testContent.test_type == 'A').\
+        first()
+    return total,res.req_num
 
 
 def static_test_request_detail(uuid):
