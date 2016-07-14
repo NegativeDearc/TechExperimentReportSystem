@@ -21,10 +21,10 @@ def highspeed_test_quantity(uuid):
 
 
 def data_to_table(ref):
-    '''
+    """
     接收一个参数来查询数据库记录，
     同时格式化数据供ajax使用
-    '''
+    """
     df = db.session.query(Highspeed).filter(Highspeed.ref == ref).first()
     if df:
         # 全部转为字典,才能json化

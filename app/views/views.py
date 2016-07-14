@@ -130,28 +130,13 @@ def test_highspeed(uuid):
 
     if request.method == 'POST':
         # 更新pickle化的数据
-        data.update({str(x):y for x,y in request.form.items()})
-        try:
-            db.session.add(
-                ReportDetail(req_num=req_num,
-                             uuid=uuid,
-                             test_content='highspeed',
-                             test_data=dumps(data),
-                             update_date=datetime.date.today()
-                             ))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
-            db.session.query(ReportDetail).\
-                filter(ReportDetail.test_content == 'highspeed',
-                       ReportDetail.uuid == uuid).\
-                update({ReportDetail.test_data: dumps(data),
-                        ReportDetail.update_date:datetime.date.today()
-                        })
-            db.session.commit()
-        finally:
-            db.session.close()
-            return redirect(url_for('test_highspeed',uuid=uuid))
+        ReportDetail(req_num=req_num,
+                     uuid=uuid,
+                     test_content='highspeed',
+                     test_data=None,
+                     update_date=datetime.date.today())\
+            .add_data(form=request.form)
+        return redirect(url_for('test_highspeed',uuid=uuid))
     return render_template('test_highspeed.html',
                            detail=detail,
                            data=data,
@@ -180,28 +165,13 @@ def test_endurance(uuid):
 
     if request.method == 'POST':
         # 更新pickle化的数据
-        data.update({str(x):y for x,y in request.form.items()})
-        try:
-            db.session.add(
-                ReportDetail(req_num=req_num,
-                             uuid=uuid,
-                             test_content='endurance',
-                             test_data=dumps(data),
-                             update_date=datetime.date.today())
-            )
-            db.session.commit()
-        except Exception:
-            db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
-            db.session.query(ReportDetail).\
-                filter(ReportDetail.test_content == 'endurance',
-                       ReportDetail.uuid == uuid).\
-                update({ReportDetail.test_data: dumps(data),
-                        ReportDetail.update_date:datetime.date.today()
-                        })
-            db.session.commit()
-        finally:
-            db.session.close()
-            return redirect(url_for('test_endurance',uuid=uuid))
+        ReportDetail(req_num=req_num,
+                     uuid=uuid,
+                     test_content='endurance',
+                     test_data=None,
+                     update_date=datetime.date.today())\
+            .add_data(form=request.form)
+        return redirect(url_for('test_endurance',uuid=uuid))
     return render_template('test_endurance.html',
                            detail=detail,
                            data=data,
@@ -225,27 +195,12 @@ def test_static(uuid):
         data = {}
 
     if request.method == 'POST':
-        data.update({str(x):y for x,y in request.form.items()})
-        try:
-            db.session.add(
-                ReportDetail(req_num=req_num,
-                             uuid=uuid,
-                             test_content='static',
-                             test_data=dumps(data),
-                             update_date=datetime.date.today())
-            )
-            db.session.commit()
-        except Exception:
-            db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
-            db.session.query(ReportDetail).\
-                filter(ReportDetail.test_content == 'static',
-                       ReportDetail.uuid == uuid).\
-                update({ReportDetail.test_data: dumps(data),
-                        ReportDetail.update_date:datetime.date.today()
-                        })
-            db.session.commit()
-        finally:
-            db.session.close()
+        ReportDetail(req_num=req_num,
+                     uuid=uuid,
+                     test_content='static',
+                     test_data=None,
+                     update_date=datetime.date.today())\
+            .add_data(form=request.form)
         return redirect(url_for('test_static',uuid=uuid))
     return render_template('test_static.html', total=total, detail=detail, data=data)
 

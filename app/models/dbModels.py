@@ -622,13 +622,16 @@ class ReportDetail(db.Model):
     每次开发组用户提交了测试需求之后，本表自动生成一份记录,记录其uuid和测试数据已经测试名目，
     其中test_data，存储pickle之后的json(dict)文件，uuid作为唯一标识符
     但pickle化的数据并不安全
+
+    由于无法指定数据唯一的列！容易出现多条记录！
+    不能使用db.session.add(RepportDetail(1...2...3..))的提交方式
     """
     __tablename__ = 'reportDetail'
 
     id           = db.Column(db.Integer,primary_key=True,nullable=False)
     req_num      = db.Column(db.String(20),nullable=False)
     uuid         = db.Column(db.String(20),nullable=False)
-    test_content = db.Column(db.String(10),nullable=False,unique=True)
+    test_content = db.Column(db.String(10),nullable=False)
     test_data    = db.Column(db.BLOB)               # 后续考虑采用json，研究下sqlite json插件
     test_date    = db.Column(db.DATE,nullable=False)
     update_date  = db.Column(db.DATE,nullable=False)
@@ -640,3 +643,52 @@ class ReportDetail(db.Model):
         self.test_data    = test_data
         self.test_date    = datetime.date.today()
         self.update_date  = update_date
+
+    def add_data(self,form):
+        """
+        在提交之前对数据进行必要的检查，以防止重复的记录产生
+        :param form:form --> request.form
+        :return:数据库记录
+        """
+        # 判断数据库记录条数
+        exist = db.session.query(ReportDetail).\
+            filter(ReportDetail.uuid == self.uuid,
+                   ReportDetail.test_content == self.test_content).\
+            count()
+
+        # 读取数据库记录
+        pickled_data = db.session.query(ReportDetail.test_data). \
+            filter(ReportDetail.uuid == self.uuid,
+                   ReportDetail.test_content == self.test_content). \
+            first()
+
+        if pickled_data:
+            data = loads(pickled_data.test_data)
+        else:
+            data = {}
+        data.update({str(x):y for x,y in form.items()})
+
+        # 更新更新数据
+        if exist == 1:
+            db.session.rollback()      # 注意如果add失败，session需要回滚才能恢复初始状态
+            db.session.query(ReportDetail).\
+                filter(ReportDetail.test_content == self.test_content,
+                       ReportDetail.uuid == self.uuid).\
+                update({ReportDetail.test_data: dumps(data),
+                        ReportDetail.update_date:datetime.date.today()})
+            db.session.commit()
+            db.session.close()
+        # 重复记录报错
+        elif exist > 1:
+            raise Exception("Database has duplicate records of %s" % ReportDetail.uuid)
+        # 插入数据
+        else:
+            db.session.add(ReportDetail(
+                req_num     = self.req_num,
+                uuid        = self.uuid,
+                test_content= self.test_content,
+                test_data   = dumps(data),
+                update_date = self.update_date
+            ))
+            db.session.commit()
+            db.session.close()

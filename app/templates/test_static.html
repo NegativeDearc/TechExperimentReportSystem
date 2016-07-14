@@ -23,7 +23,7 @@
         html,body {
             height: 297mm;
             width: 210mm;
-            font-size: 10px;
+            font-size: 8px;
         }
         /*隐藏不打印*/
         background {none;}
@@ -40,6 +40,19 @@
             text-align: center;
             vertical-align: middle!important;
             border: 1px solid black!important;
+        }
+        .table-bordered>tbody>tr>td,
+        .table-bordered>tbody>tr>th,
+        .table-bordered>tfoot>tr>td,
+        .table-bordered>tfoot>tr>th,
+        .table-bordered>thead>tr>td,
+        .table-bordered>thead>tr>th {
+            border: 1px solid black!important;
+            padding: 1px!important;
+            line-height: 1!important;
+        }
+        table{
+            margin: -1px!important;
         }
         /*底部版权*/
         #copyright > .container-fluid {text-align: center;}
@@ -92,6 +105,47 @@
     </div>
 </nav>
 <!--重用结束-->
+{# input 第一种类型宏 #}
+{% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% else %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# input 第二种类型宏 差别在于多了时间类datetime #}
+{% macro input_2(name,prefix,colspan,rowspan=0,type='text',class='form-control datetime') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% else %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# input 第三种类型宏,用于计算平均值#}
+{% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='',readonly=False)-%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}" class="{{ cls_td }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% elif not readonly %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+        </td>
+    {% elif readonly %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}" readonly>
+        </td>
+    {%- endif %}
+{%- endmacro %}
+
 <div class="container">
 <h3>外胎静态性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
     <form action="" method="post">
@@ -112,29 +166,29 @@
                 <td>商标/花纹代码<br><small>Pattern</small></td>
                 <td>{{ detail.get('brand') }}</td>
                 <td>DOT码/加硫机号<br><small>DOT Num.</small></td>
-                <td id="dot_num">{{ data.get('dot_num') or '<input type="text" name="dot_num" class="form-control">'|safe }}</td>
+                {{ input_1(name='dot_num',prefix='static') }}
                 <td>组装时间<br><small>Assembly Time</small></td>
-                <td id="assembly_time">{{ data.get('assembly_time') or '<input type="text" name="assembly_time" class="datetime form-control">'|safe }}</td>
+                {{ input_2(name='assembly_time',prefix='static') }}
             </tr>
             <tr>
                 <td>花纹代号<br>Design Num.</td>
-                <td id="pattern_code">{{ data.get('pattern_code') or'<input type="text" name="pattern_code" class="form-control">'|safe }}</td>
+                {{ input_1(name='pattern_code',prefix='static') }}
                 <td>周期牌号<br><small>Week Number</small></td>
-                <td id="dot_week">{{ data.get('dot_week') or'<input type="text" name="dot_week" class="form-control">'|safe }}</td>
+                {{ input_1(name='dot_week',prefix='static') }}
                 <td>完成时间<br><small>Finish Date</small></td>
-                <td id="finish_time">{{ data.get('finish_time') or'<input type="text" class="datetime form-control" name="finish_time">'|safe }}</td>
+                {{ input_2(name='finish_time',prefix='static') }}
             </tr>
             <tr>
                 <td>模具号<br><small>Mold</small></td>
-                <td id="mold_num">{{ data.get('mold_num') or'<input type="text" name="mold_num" class="form-control">'|safe }}</td>
+                {{ input_1(name='mold_num',prefix='static') }}
                 <td>加硫条码号<br><small>Barcode</small></td>
-                <td id="barcode">{{ data.get('barcode') or'<input type="text" name="barcode" class="form-control">'|safe }}</td>
+                {{ input_1(name='barcode',prefix='static') }}
                 <td>标准轮辋<br><small>Standard Rim</small></td>
-                <td id="rim_code">{{ data.get('rim_code') or'<input type="text" name="rim_code" class="form-control">'|safe }}</td>
+                {{ input_1(name='rim_code',prefix='static') }}
             </tr>
             <tr>
                 <td>胎面批号<br><small>Tread Run</small></td>
-                <td id="tread_num">{{ data.get('tread_num') or'<input type="text" name="tread_num" class="form-control">'|safe }}</td>
+                {{ input_1(name='tread_num',prefix='static') }}
                 <td>最大荷重<br><small>Max Load</small></td>
                 <td>{{ detail.get('load') }}kg</td>
                 <td>最大风压<br><small>Max Pressure</small></td>
@@ -148,15 +202,13 @@
                 </tr>
                 <tr>
                     <td>测试风压<br>Pressure</td>
-                    <td colspan="2" id="dim_test_inflate">{{ data.get('dim_test_inflate') or'<input type="text" name="dim_test_inflate" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_inflate',colspan=2,prefix='static') }}
                     <td>测试轮辋<br>Rim</td>
-                    <td colspan="2" id="dim_test_rim_code">{{ data.get('dim_test_rim_code') or'<input type="text" name="dim_test_rim_code" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_rim_code',colspan=2,prefix='static') }}
                     <td>测试时间<br>Time</td>
-                    <td colspan="2" id="dim_test_finish_time">
-                        {{ data.get('dim_test_finish_time') or'<input type="text" name="dim_test_finish_time" class="datetime form-control">'|safe }}
-                    </td>
+                    {{ input_2(name='dim_test_finish_time',colspan=2,prefix='static') }}
                     <td >技术员<br>Tech.</td>
-                    <td id="dim_test_operator">{{ data.get('dim_test_operator') or'<input type="text" name="dim_test_operator" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_operator',prefix='static') }}
                 </tr>
                 <tr>
                     <td>项目<br>Item</td>
@@ -173,69 +225,69 @@
                 </tr>
                 <tr>
                     <td>重量<br>Weight</td>
-                    <td colspan="7" id="dim_test_tire_weight">{{ data.get('dim_test_tire_weight') or '<input type="text" name="dim_test_tire_weight" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_spec_weight">{{ data.get('dim_test_tire_spec_weight') or '<input type="text" name="dim_test_tire_spec_weight" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_weight',colspan=7,prefix='static') }}
+                    {{ input_1(name='dim_test_tire_spec_weight',prefix='static') }}
                     <td></td>
-                    <td id="dim_test_tire_weight_gauge">{{ data.get('dim_test_tire_weight_gauge') or '<input type="text" name="dim_test_tire_weight_gauge" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_weight_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td>外径<br>Diameter</td>
-                    <td colspan="7" id="dim_test_tire_out_dia">{{ data.get('dim_test_tire_out_dia') or '<input type="text" name="dim_test_tire_out_dia" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_spec_dia">{{ data.get('dim_test_tire_spec_dia') or '<input type="text" name="dim_test_tire_spec_dia" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_out_dia',colspan=7,prefix='static') }}
+                    {{ input_1(name='dim_test_tire_spec_dia',prefix='static') }}
                     <td></td>
-                    <td id="dim_test_tire_dia_gauge">{{ data.get('dim_test_tire_dia_gauge') or '<input type="text" name="dim_test_tire_dia_gauge" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_dia_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td>总宽<br>Overall Width</td>
-                    <td id="dim_test_tire_overall_width_1">{{ data.get('dim_test_tire_overall_width_1') or '<input type="text" name="dim_test_tire_overall_width_1" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_overall_width_2">{{ data.get('dim_test_tire_overall_width_2') or '<input type="text" name="dim_test_tire_overall_width_2" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_overall_width_3">{{ data.get('dim_test_tire_overall_width_3') or '<input type="text" name="dim_test_tire_overall_width_3" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_overall_width_4">{{ data.get('dim_test_tire_overall_width_4') or '<input type="text" name="dim_test_tire_overall_width_4" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_overall_width_5">{{ data.get('dim_test_tire_overall_width_5') or '<input type="text" name="dim_test_tire_overall_width_5" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_overall_width_6">{{ data.get('dim_test_tire_overall_width_6') or '<input type="text" name="dim_test_tire_overall_width_6" class="form-control">'|safe }}</td>
+                    {{ input_3(name='dim_test_tire_overall_width_1',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_overall_width_2',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_overall_width_3',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_overall_width_4',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_overall_width_5',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_overall_width_6',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_overall_width_avg',prefix='static',cls_td='avg1',readonly=True) }}
+                    {{ input_1(name='dim_test_tire_overall_width_spec',prefix='static') }}
                     <td></td>
-                    <td id="dim_test_tire_overall_width_spec">{{ data.get('dim_test_tire_overall_width_spec') or '<input type="text" name="dim_test_tire_overall_width_spec" class="form-control">'|safe }}</td>
-                    <td></td>
-                    <td id="dim_test_tire_overall_width_gauge">{{ data.get('dim_test_tire_overall_width_gauge') or '<input type="text" name="dim_test_tire_overall_width_gauge" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_overall_width_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td>断宽<br>Section Width</td>
-                    <td id="dim_test_tire_section_width_1">{{ data.get('dim_test_tire_section_width_1') or '<input type="text" name="dim_test_tire_section_width_1" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_width_2">{{ data.get('dim_test_tire_section_width_2') or '<input type="text" name="dim_test_tire_section_width_2" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_width_3">{{ data.get('dim_test_tire_section_width_3') or '<input type="text" name="dim_test_tire_section_width_3" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_width_4">{{ data.get('dim_test_tire_section_width_4') or '<input type="text" name="dim_test_tire_section_width_4" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_width_5">{{ data.get('dim_test_tire_section_width_5') or '<input type="text" name="dim_test_tire_section_width_5" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_width_6">{{ data.get('dim_test_tire_section_width_6') or '<input type="text" name="dim_test_tire_section_width_6" class="form-control">'|safe }}</td>
+                    {{ input_3(name='dim_test_tire_section_width_1',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_width_2',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_width_3',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_width_4',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_width_5',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_width_6',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_width_6',prefix='static',cls_td='avg1',readonly=True) }}
+                    {{ input_1(name='dim_test_tire_section_width_spec',prefix='static') }}
                     <td></td>
-                    <td id="dim_test_tire_section_width_spec">{{ data.get('dim_test_tire_section_width_spec') or '<input type="text" name="dim_test_tire_section_width_spec" class="form-control">'|safe }}</td>
-                    <td></td>
-                    <td id="dim_test_tire_section_width_gauge">{{ data.get('dim_test_tire_section_width_gauge') or '<input type="text" name="dim_test_tire_section_width_gauge" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_section_width_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td>汶沟深<br>Nonskid</td>
-                    <td id="dim_test_tire_section_nonskid_1">{{ data.get('dim_test_tire_nonskid_1') or '<input type="text" name="dim_test_tire_nonskid_1" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_nonskid_2">{{ data.get('dim_test_tire_nonskid_2') or '<input type="text" name="dim_test_tire_nonskid_2" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_nonskid_3">{{ data.get('dim_test_tire_nonskid_3') or '<input type="text" name="dim_test_tire_nonskid_3" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_nonskid_4">{{ data.get('dim_test_tire_nonskid_4') or '<input type="text" name="dim_test_tire_nonskid_4" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_nonskid_5">{{ data.get('dim_test_tire_nonskid_5') or '<input type="text" name="dim_test_tire_nonskid_5" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_nonskid_6">{{ data.get('dim_test_tire_nonskid_6') or '<input type="text" name="dim_test_tire_nonskid_6" class="form-control">'|safe }}</td>
+                    {{ input_3(name='dim_test_tire_section_nonskid_1',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_nonskid_2',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_nonskid_3',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_nonskid_4',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_nonskid_5',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_nonskid_6',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_nonskid_avg',prefix='static',cls_td='avg1',readonly=True) }}
+                    {{ input_1(name='dim_test_tire_section_nonskid_spec',prefix='static') }}
                     <td></td>
-                    <td id="dim_test_tire_section_nonskid_spec">{{ data.get('dim_test_tire_nonskid_spec') or '<input type="text" name="dim_test_tire_nonskid_spec" class="form-control">'|safe }}</td>
-                    <td></td>
-                    <td id="dim_test_tire_section_nonskid_gauge">{{ data.get('dim_test_tire_nonskid_gauge') or '<input type="text" name="dim_test_tire_nonskid_gauge" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_section_nonskid_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td>磨耗<br>T.W.I</td>
-                    <td id="dim_test_tire_section_twi_1">{{ data.get('dim_test_tire_twi_1') or '<input type="text" name="dim_test_tire_twi_1" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_twi_2">{{ data.get('dim_test_tire_twi_2') or '<input type="text" name="dim_test_tire_twi_2" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_twi_3">{{ data.get('dim_test_tire_twi_3') or '<input type="text" name="dim_test_tire_twi_3" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_twi_4">{{ data.get('dim_test_tire_twi_4') or '<input type="text" name="dim_test_tire_twi_4" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_twi_5">{{ data.get('dim_test_tire_twi_5') or '<input type="text" name="dim_test_tire_twi_5" class="form-control">'|safe }}</td>
-                    <td id="dim_test_tire_section_twi_6">{{ data.get('dim_test_tire_twi_6') or '<input type="text" name="dim_test_tire_twi_6" class="form-control">'|safe }}</td>
+                    {{ input_3(name='dim_test_tire_section_twi_1',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_twi_2',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_twi_3',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_twi_4',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_twi_5',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_twi_6',prefix='static') }}
+                    {{ input_3(name='dim_test_tire_section_twi_avg',prefix='static',cls_td='avg1',readonly=True) }}
+                    {{ input_1(name='dim_test_tire_section_twi_spec',prefix='static') }}
                     <td></td>
-                    <td id="dim_test_tire_section_twi_spec">{{ data.get('dim_test_tire_twi_spec') or '<input type="text" name="dim_test_tire_twi_spec" class="form-control">'|safe }}</td>
-                    <td></td>
-                    <td id="dim_test_tire_section_twi_gauge">{{ data.get('dim_test_tire_twi_gauge') or '<input type="text" name="dim_test_tire_twi_gauge" class="form-control">'|safe }}</td>
+                    {{ input_1(name='dim_test_tire_section_twi_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td colspan="5">尺寸测量判定<br>Judgement</td>
@@ -253,31 +305,31 @@
             </tr>
             <tr>
                 <td>P值<br>P value</td>
-                <td id="unseat_test_p_value">{{ data.get('unseat_test_p_value') or '<input type="text" name="unseat_test_p_value" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_p_value',prefix='static') }}
                 <td>测试速度<br>Speed</td>
-                <td colspan="2" id="unseat_test_speed">{{ data.get('unseat_test_speed') or '<input type="text" name="unseat_test_speed" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_speed',colspan=2,prefix='static') }}
                 <td>测试温度<br>Temperature</td>
-                <td colspan="2" id="unseat_test_temp">{{ data.get('unseat_test_temp') or '<input type="text" name="unseat_test_temp" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_temp',colspan=2,prefix='static') }}
             </tr>
             <tr>
                 <td>测试风压<br>Pressure</td>
-                <td id="unseat_test_pressure">{{ data.get('unseat_test_pressure') or '<input type="text" name="unseat_test_pressure" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_pressure',prefix='static') }}
                 <td>测试轮辋<br>Rim</td>
-                <td id="unseat_test_dim">{{ data.get('unseat_test_pressure') or '<input type="text" name="unseat_test_dim" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_dim',prefix='static') }}
                 <td>测试时间<br>Time</td>
-                <td id="unseat_test_time">{{ data.get('unseat_test_time') or '<input type="text" name="unseat_test_time" class="form-control datetime">'|safe }}</td>
+                {{ input_2(name='unseat_test_time',prefix='static') }}
                 <td>技术员<br>Tech.</td>
-                <td id="unseat_test_operator">{{ data.get('unseat_test_operator') or '<input type="text" name="unseat_test_operator" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_operator',prefix='static') }}
             </tr>
             <tr>
                 <td>参考标准<br>Reference</td>
-                <td id="unseat_test_ref">{{ data.get('unseat_test_ref') or '<input type="text" name="unseat_test_ref" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_ref',prefix='static') }}
                 <td>合格基准<br>Spec</td>
-                <td id="unseat_test_spec">{{ data.get('unseat_test_spec') or '<input type="text" name="unseat_test_spec" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_spec',prefix='static') }}
                 <td>脱唇块<br>Block</td>
-                <td id="unseat_test_block">{{ data.get('unseat_test_block') or '<input type="text" name="unseat_test_block" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_block',prefix='static') }}
                 <td>设备编号<br>Equipment Id</td>
-                <td id="unseat_test_equipment_id">{{ data.get('unseat_test_equipmet_id') or '<input type="text" name="unseat_test_equipment_id" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_equipment_id',prefix='static') }}
             </tr>
             <tr>
                 <td colspan="3">测试点<br>Position</td>
@@ -289,11 +341,11 @@
             </tr>
             <tr>
                 <td colspan="3">测试荷重<br>Load</td>
-                <td id="unseat_test_position_1">{{ data.get('unseat_test_position_1') or '<input type="text" name="unseat_test_position_1" class="form-control">'|safe }}</td>
-                <td id="unseat_test_position_2">{{ data.get('unseat_test_position_2') or '<input type="text" name="unseat_test_position_2" class="form-control">'|safe }}</td>
-                <td id="unseat_test_position_3">{{ data.get('unseat_test_position_3') or '<input type="text" name="unseat_test_position_3" class="form-control">'|safe }}</td>
-                <td id="unseat_test_position_4">{{ data.get('unseat_test_position_4') or '<input type="text" name="unseat_test_position_4" class="form-control">'|safe }}</td>
-                <td id="unseat_test_position_5">{{ data.get('unseat_test_position_5') or '<input type="text" name="unseat_test_position_5" class="form-control">'|safe }}</td>
+                {{ input_3(name='unseat_test_position_1',prefix='static') }}
+                {{ input_3(name='unseat_test_position_2',prefix='static') }}
+                {{ input_3(name='unseat_test_position_3',prefix='static') }}
+                {{ input_3(name='unseat_test_position_4',prefix='static') }}
+                {{ input_3(name='unseat_test_position_5',prefix='static') }}
             </tr>
             <tr>
                 <td colspan="3">轮胎状态<br>Tire Status</td>
@@ -305,7 +357,7 @@
             </tr>
             <tr>
                 <td>测试最大值<br>Max load</td>
-                <td id="unseat_test_position_max_value">{{ data.get('unseat_test_position_max_value') or '<input type="text" name="unseat_test_position_max_value" class="form-control">'|safe }}</td>
+                {{ input_1(name='unseat_test_position_max_value',prefix='static') }}
                 <td>合格率%<br>Yield</td>
                 <td></td>
                 <td>判定<br>Judgement</td>
@@ -323,29 +375,29 @@
             </tr>
             <tr>
                 <td colspan="2">测试速度<br>Speed</td>
-                <td colspan="2" id="plunger_test_speed">{{ data.get('plunger_test_speed') or '<input type="text" name="plunger_test_speed" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_speed',colspan=2,prefix='static') }}
                 <td colspan="2">测试温度<br>Temperature</td>
-                <td colspan="2" id="plunger_test_temp">{{ data.get('plunger_test_temp') or '<input type="text" name="plunger_test_temp" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_temp',colspan=2,prefix='static') }}
             </tr>
             <tr>
                 <td>测试风压<br>Pressure</td>
-                <td id="plunger_test_pressure">{{ data.get('plunger_test_pressure') or '<input type="text" name="plunger_test_pressure" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_pressure',prefix='static') }}
                 <td>测试轮辋<br>Dim</td>
-                <td id="plunger_test_dim">{{ data.get('plunger_test_dim') or '<input type="text" name="plunger_test_dim" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_dim',prefix='static') }}
                 <td>测试时间<br>Time</td>
-                <td id="plunger_test_time">{{ data.get('plunger_test_time') or '<input type="text" name="plunger_test_time" class="form-control datetime">'|safe }}</td>
+                {{ input_2(name='plunger_test_time',prefix='static') }}
                 <td>技术员<br>Tech.</td>
-                <td id="plunger_test_operator">{{ data.get('plunger_test_operator') or '<input type="text" name="plunger_test_operator" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_operator',prefix='static') }}
             </tr>
             <tr>
                 <td>参考标准<br>Reference</td>
-                <td id="plunger_test_ref">{{ data.get('plunger_test_ref') or '<input type="text" name="plunger_test_ref" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_ref',prefix='static') }}
                 <td>合格基准<br>Spec</td>
-                <td id="plunger_test_spec">{{ data.get('plunger_test_spec') or '<input type="text" name="plunger_test_spec" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_spec',prefix='static') }}
                 <td>柱压杆<br>Bar size</td>
-                <td id="plunger_test_bar_size">{{ data.get('plunger_test_bar_size') or '<input type="text" name="plunger_test_bar_size" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_bar_size',prefix='static') }}
                 <td>设备编号<br>Equipment Id</td>
-                <td id="plunger_test_equipment_id">{{ data.get('plunger_test_equipment_id') or '<input type="text" name="plunger_test_equipment_id" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_equipment_id',prefix='static') }}
             </tr>
             <tr>
                 <td colspan="3">测试点<br>Position</td>
@@ -357,27 +409,27 @@
             </tr>
             <tr>
                 <td colspan="3">测试荷重<br>Load</td>
-                <td id="plunger_test_load_1">{{ data.get('plunger_test_load_1') or '<input type="text" name="plunger_test_load_1" class="form-control">'|safe }}</td>
-                <td id="plunger_test_load_2">{{ data.get('plunger_test_load_2') or '<input type="text" name="plunger_test_load_2" class="form-control">'|safe }}</td>
-                <td id="plunger_test_load_3">{{ data.get('plunger_test_load_3') or '<input type="text" name="plunger_test_load_3" class="form-control">'|safe }}</td>
-                <td id="plunger_test_load_4">{{ data.get('plunger_test_load_4') or '<input type="text" name="plunger_test_load_4" class="form-control">'|safe }}</td>
-                <td id="plunger_test_load_5">{{ data.get('plunger_test_load_5') or '<input type="text" name="plunger_test_load_5" class="form-control">'|safe }}</td>
+                {{ input_3(name='plunger_test_load_1',prefix='static') }}
+                {{ input_3(name='plunger_test_load_2',prefix='static') }}
+                {{ input_3(name='plunger_test_load_3',prefix='static') }}
+                {{ input_3(name='plunger_test_load_4',prefix='static') }}
+                {{ input_3(name='plunger_test_load_5',prefix='static') }}
             </tr>
             <tr>
                 <td colspan="3">位移量<br>Deflection</td>
-                <td id="plunger_test_deflection_1">{{ data.get('plunger_test_deflection_1') or '<input type="text" name="plunger_test_deflection_1" class="form-control">'|safe }}</td>
-                <td id="plunger_test_deflection_2">{{ data.get('plunger_test_deflection_2') or '<input type="text" name="plunger_test_deflection_2" class="form-control">'|safe }}</td>
-                <td id="plunger_test_deflection_3">{{ data.get('plunger_test_deflection_3') or '<input type="text" name="plunger_test_deflection_3" class="form-control">'|safe }}</td>
-                <td id="plunger_test_deflection_4">{{ data.get('plunger_test_deflection_4') or '<input type="text" name="plunger_test_deflection_4" class="form-control">'|safe }}</td>
-                <td id="plunger_test_deflection_5">{{ data.get('plunger_test_deflection_5') or '<input type="text" name="plunger_test_deflection_5" class="form-control">'|safe }}</td>
+                {{ input_3(name='plunger_test_deflection_1',prefix='static') }}
+                {{ input_3(name='plunger_test_deflection_2',prefix='static') }}
+                {{ input_3(name='plunger_test_deflection_3',prefix='static') }}
+                {{ input_3(name='plunger_test_deflection_4',prefix='static') }}
+                {{ input_3(name='plunger_test_deflection_5',prefix='static') }}
             </tr>
             <tr>
                 <td colspan="3">能量<br>Energy</td>
-                <td id="plunger_test_energy_1">{{ data.get('plunger_test_energy_1') or '<input type="text" name="plunger_test_energy_1" class="form-control">'|safe }}</td>
-                <td id="plunger_test_energy_2">{{ data.get('plunger_test_energy_2') or '<input type="text" name="plunger_test_energy_2" class="form-control">'|safe }}</td>
-                <td id="plunger_test_energy_3">{{ data.get('plunger_test_energy_3') or '<input type="text" name="plunger_test_energy_3" class="form-control">'|safe }}</td>
-                <td id="plunger_test_energy_4">{{ data.get('plunger_test_energy_4') or '<input type="text" name="plunger_test_energy_4" class="form-control">'|safe }}</td>
-                <td id="plunger_test_energy_5">{{ data.get('plunger_test_energy_5') or '<input type="text" name="plunger_test_energy_5" class="form-control">'|safe }}</td>
+                {{ input_3(name='plunger_test_energy_1',prefix='static') }}
+                {{ input_3(name='plunger_test_energy_2',prefix='static') }}
+                {{ input_3(name='plunger_test_energy_3',prefix='static') }}
+                {{ input_3(name='plunger_test_energy_4',prefix='static') }}
+                {{ input_3(name='plunger_test_energy_5',prefix='static') }}
             </tr>
             <tr>
                 <td colspan="3">轮胎状态<br>Tire Status</td>
@@ -389,7 +441,7 @@
             </tr>
             <tr>
                 <td>最大能量<br>Max Energy</td>
-                <td id="plunger_test_energy_max">{{ data.get('plunger_test_energy_max') or '<input type="text" name="plunger_test_energy_max" class="form-control">'|safe }}</td>
+                {{ input_1(name='plunger_test_energy_max',prefix='static') }}
                 <td>合格率 %<br>Yeild</td>
                 <td></td>
                 <td>判定<br>Judgement</td>
@@ -457,24 +509,61 @@
             alert('该单元格无法修改');
             return false;
         } else {
-            //若获取到id值传入构造的input中作为name
-            var td_id = $(this).attr('id');
-            //原值
-            var old_value = $(this)[0].innerText;
-            //原class
-            console.log(td_id);
-            console.log(old_value);
-            if (td_id.indexOf('time') != -1){
-                str = '<input type="text" class="form-control datetime" name="' +
-                    td_id + '" value="' + old_value + '">';
+            try {
+                var nodename = $(this).children()[0].nodeName;
+            } catch(e) {
+                var nodename = 'undefined';
+            };
+            if( nodename == 'INPUT' || $(this).attr('class') == 'avg1') {
+                /*
+                如果没有子节点那么就会出错，无法执行下一步的判断
+                td中如果嵌套了input也不提供修改,如果是avg1的机器计算的也不提供修改
+                知识点：1.jquery对象和原生js对象的转换 2.判断节点的方法
+                */
+                //避免干扰
+                //alert('该单元格已经嵌套INPUT,无法再次生成INPUT');
+                return false;
             } else {
-                str = '<input type="text" class="form-control" name="' +
+                //若获取到id值传入构造的input中作为name
+                var td_id = $(this).attr('id');
+                //原值
+                var old_value = $(this)[0].innerText;
+                //原class
+                //console.log(td_id);
+                //console.log(old_value);
+                if(confirm('确定需要修改数据吗？')){
+                    if (td_id.indexOf('time') != -1){
+                    str = '<input type="text" class="form-control datetime" name="' +
                     td_id + '" value="' + old_value + '">';
+                    } else {
+                        str = '<input type="text" class="form-control" name="' +
+                            td_id + '" value="' + old_value + '">';
+                    }
+                    //console.log(str);
+                    $(this).html(str);
+                }
             }
-            console.log(str);
-            $(this).html(str);
         }
     });
+    /*
+    求平均值
+     */
+    $(".avg").bind("input propertychange oninput", function(){
+        $(".avg1").each(function(){
+            var x = $(this).siblings().children('input.avg');
+            var sum=0;
+            for(var i=0;i<6;i++){
+                try{
+                    sum += Number(x[i].value);
+                } catch(e) {
+                    //console.log(e);
+                    sum += 0;
+                };
+                console.log(sum);
+            };
+            $(this).children().attr('value',(sum/6).toFixed(2));
+        });
+    })
 </script>
 </body>
 </html>

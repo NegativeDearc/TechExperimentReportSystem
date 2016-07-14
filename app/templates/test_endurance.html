@@ -22,7 +22,7 @@
             html,body {
                 height: 297mm;
                 width: 210mm;
-                font-size: 10px;
+                font-size: 8px;
             }
             /*隐藏不打印*/
             background {none;}
@@ -40,6 +40,19 @@
                 text-align: center;
                 vertical-align: middle!important;
                 border: 1px solid black!important;
+            }
+            .table-bordered>tbody>tr>td,
+            .table-bordered>tbody>tr>th,
+            .table-bordered>tfoot>tr>td,
+            .table-bordered>tfoot>tr>th,
+            .table-bordered>thead>tr>td,
+            .table-bordered>thead>tr>th {
+                border: 1px solid black!important;
+                padding: 1px!important;
+                line-height: 1!important;
+            }
+            table{
+                margin: -1px!important;
             }
             /*底部版权*/
             #copyright > .container-fluid {text-align: center;}
@@ -473,15 +486,17 @@
                 //原class
                 //console.log(td_id);
                 //console.log(old_value);
-                if (td_id.indexOf('time') != -1){
+                if(confirm('确定需要修改数据吗？')){
+                    if (td_id.indexOf('time') != -1){
                     str = '<input type="text" class="form-control datetime" name="' +
-                        td_id + '" value="' + old_value + '">';
-                } else {
-                    str = '<input type="text" class="form-control" name="' +
-                        td_id + '" value="' + old_value + '">';
+                    td_id + '" value="' + old_value + '">';
+                    } else {
+                        str = '<input type="text" class="form-control" name="' +
+                            td_id + '" value="' + old_value + '">';
+                    }
+                    //console.log(str);
+                    $(this).html(str);
                 }
-                //console.log(str);
-                $(this).html(str);
             }
         }
     });
