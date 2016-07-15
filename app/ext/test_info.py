@@ -32,9 +32,9 @@ class testInfo(object):
                 if n.test_type == 'A':
                     url = '/report/static/' + n.uuid + '/'
                 if n.test_type == 'B':
-                    url = 'report/endurance/' + n.uuid + '/'
+                    url = 'report/endurance/' + n.uuid + '/#' + n.test_content
                 if n.test_type == 'C':
-                    url = '/report/highspeed/' + n.uuid + '/'
+                    url = '/report/highspeed/' + n.uuid + '/#' + n.test_content
 
                 v.append([m.name,
                           m.date,

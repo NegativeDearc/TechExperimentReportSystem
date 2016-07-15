@@ -84,7 +84,6 @@ def developer():
 @app.route('/tester')
 def tester():
     data = testInfo().test_info()
-    print data
     return render_template('tester.html', data=data)
 
 

@@ -9,10 +9,11 @@
 <link rel="stylesheet" href="../static/bootstrap.min.css">
 <script src="../static/jquery.min.js"></script>
 <script src="../static/bootstrap.min.js"></script>
+<script src="/static/trianglify.min.js"></script>
+
 
 <style>
     .container {margin-top: 200px;}
-    body {background-color: #dddddd;}
     .messages {color: red;font-style: oblique}
     p {font-size: 9px;color: #1fa67a}
 </style>
@@ -64,5 +65,13 @@
         <p>ALL RIGHTS RESERVED &copy; 2016 SHELDON CHEN</p>
     </div>
 </nav>
+
+<script>
+    var pattern = Trianglify({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+    document.body.setAttribute('style', 'background-image:url( '+ pattern.png() + ')');   
+</script>
 </body>
 </html>

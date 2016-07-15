@@ -1,0 +1,76 @@
+@page {
+        /*页面设置：a4 横幅*/
+        size: A4 portrait;
+        margin: 5%;
+    }
+
+@media print {
+    /*隐藏不打印*/
+    .anchor{display: none;}
+    nav {display: none;}
+    input.btn {display: none;}
+    .test-number {display: none;}
+    /*细节调整*/
+    table,h3 {
+        text-align: center;
+        vertical-align: middle!important;
+        page-break-inside: avoid;
+        table-layout: fixed;
+    }
+
+    table{
+        margin: -1px!important;
+    }
+    h3 {page-break-before: always!important;}
+    td {
+        text-align: center;
+        vertical-align: middle!important;
+        border: 1px solid black!important;
+    }
+    .table-bordered>tbody>tr>td,
+    .table-bordered>tbody>tr>th,
+    .table-bordered>tfoot>tr>td,
+    .table-bordered>tfoot>tr>th,
+    .table-bordered>thead>tr>td,
+    .table-bordered>thead>tr>th {
+        border: 1px solid black!important;
+        padding: 1px!important;
+        line-height: 1!important;
+    }
+    .table-bordered>tbody>tr>td{
+        font-size: 1px!important;
+    }
+    .table-without-bordered>tbody>tr>td {
+        border: 1px dashed!important;
+    }
+    /*底部版权*/
+    #copyright > div {text-align: center;}
+    #document_ref {text-align: right;margin-top: 10px;}
+}
+
+@media screen {
+    body {background-color:#FFFFCC;}
+    table,nav,h3,.test-number{
+        font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
+    }
+    h3,input,.test-number {text-align: center;}
+    .test-number {color: red;}
+    table td {text-align: center;vertical-align: middle!important;}
+    table {table-layout: fixed;}
+    #document_ref {text-align: right;margin-top: 10px;}
+    .table1 tr:first-child > td {background-color: #5bc0de;color: whitesmoke;}
+    .navbar-brand {
+    animation: colorful 5s;
+    -webkit-animation: colorful 5s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;}
+    @-webkit-keyframes colorful {
+        0% { color: #c00; }
+        50% { color: orange; }
+        100% { color: yellowgreen; }
+    }
+    .navbar-collapse {margin-top: 9px;}
+    .navbar-collapse > a {font-size: 16px;}
+    nav {margin-bottom: 20px;}
+    #copyright {display: none;}
+}

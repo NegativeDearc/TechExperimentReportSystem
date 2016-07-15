@@ -82,7 +82,7 @@
             {% endfor %}
             <td style="display: none">{{ v[-1] }}</td>
             <td>
-                <a class="btn btn-primary target-url" href="{{ v[-2] }}" target="_blank">前往处理</a>
+                <a class="btn btn-primary target-url" href="{{ v[-2]|safe }}" target="_blank">前往处理</a>
                 <a class="btn btn-warning" target="_blank">标记为已处理</a>
             </td>
             </tr>

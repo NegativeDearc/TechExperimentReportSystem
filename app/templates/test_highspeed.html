@@ -8,87 +8,10 @@
     <link rel="stylesheet" href="/static/bootstrap.min.css">
     <script src="/static/jquery.min.js"></script>
     <script src="/static/bootstrap.min.js"></script>
-
-    <script src="/static/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
-    <link rel="stylesheet" href="/static/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <script src="/static/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-<style>
-    @page {
-        /*页面设置：a4 横幅*/
-        size: A4 portrait;
-        margin: 10px;
-    }
-
-    @media print {
-        html,body {
-            height: 297mm;
-            width: 210mm;
-            font-size: 10px;
-        }
-        /*隐藏不打印*/
-        background {none;}
-        nav {display: none;}
-        input.btn {display: none;}
-        .test-number {display: none;}
-        /*细节调整*/
-        table,h3 {
-            text-align: center;
-            vertical-align: middle!important;
-            page-break-inside: avoid;
-            table-layout: fixed;
-        }
-        td {
-            text-align: center;
-            vertical-align: middle!important;
-            border: 1px solid black!important;
-        }
-        .table-bordered>tbody>tr>td,
-        .table-bordered>tbody>tr>th,
-        .table-bordered>tfoot>tr>td,
-        .table-bordered>tfoot>tr>th,
-        .table-bordered>thead>tr>td,
-        .table-bordered>thead>tr>th {
-            border: 1px solid black!important;
-            padding: 1px!important;
-            line-height: 1!important;
-        }
-        table{
-            margin: -1px!important;
-        }
-        .table-bordered>tbody>tr>td{
-            font-size: 1px!important;
-        }
-        /*底部版权*/
-        #copyright > .container-fluid {text-align: center;}
-        #document_ref {text-align: right;margin-top: 10px;}
-    }
-
-    @media screen {
-        table,nav,h3,.test-number{
-            font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
-        }
-        h3,input,.test-number {text-align: center;}
-        .test-number {color: red;}
-        table td {text-align: center;vertical-align: middle!important;}
-        table {table-layout: fixed;}
-        #document_ref {text-align: right;margin-top: 10px;}
-        .table1 tr:first-child > td {background-color: #5bc0de;color: whitesmoke;}
-        .navbar-brand {
-        animation: colorful 5s;
-        -webkit-animation: colorful 5s;
-        -webkit-animation-iteration-count: infinite;
-        -webkit-animation-direction: alternate;}
-        @-webkit-keyframes colorful {
-            0% { color: #c00; }
-            50% { color: orange; }
-            100% { color: yellowgreen; }
-        }
-        .navbar-collapse {margin-top: 9px;}
-        .navbar-collapse > a {font-size: 16px;}
-        nav {margin-bottom: 20px;}
-        #copyright {display: none;}
-    }
-</style>
 <body>
 <!--这边可以通过jinja2模板继承重用-->
 <nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
@@ -111,55 +34,7 @@
 </nav>
 <!--重用结束-->
 <div class="container">
-<h3>外胎高速性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
     <form action="" method="post">
-        <div class="table-responsive">
-        <table class="table table-bordered table-condensed table1">
-            <tr>
-                <td colspan="6">基础信息</td>
-            </tr>
-            <tr>
-                <td>标称尺度<br><small>Size</small></td>
-                <td>{{ detail.get('size') }}</td>
-                <td>委托编号<br><small>Request Number</small></td>
-                <td>{{ detail.get('req_num') }}</td>
-                <td>实验目的<br><small>Purpose</small></td>
-                <td>{{ detail.get('purpose') }}</td>
-            </tr>
-            <tr>
-                <td>商标/花纹代码<br><small>Pattern</small></td>
-                <td>{{ detail.get('brand') }}</td>
-                <td>DOT码/加硫机号<br><small>DOT Num.</small></td>
-                <td id="dot_num">{{ data.get('dot_num') or '<input type="text" name="dot_num" class="form-control">'|safe }}</td>
-                <td>组装时间<br><small>Assembly Time</small></td>
-                <td id="assembly_time">{{ data.get('assembly_time') or '<input type="text" name="assembly_time" class="datetime form-control">'|safe }}</td>
-            </tr>
-            <tr>
-                <td>花纹代号<br>Design Num.</td>
-                <td id="pattern_code">{{ data.get('pattern_code') or'<input type="text" name="pattern_code" class="form-control">'|safe }}</td>
-                <td>周期牌号<br><small>Week Number</small></td>
-                <td id="dot_week">{{ data.get('dot_week') or'<input type="text" name="dot_week" class="form-control">'|safe }}</td>
-                <td>完成时间<br><small>Finish Date</small></td>
-                <td id="finish_time">{{ data.get('finish_time') or'<input type="text" class="datetime form-control" name="finish_time">'|safe }}</td>
-            </tr>
-            <tr>
-                <td>模具号<br><small>Mold</small></td>
-                <td id="mold_num">{{ data.get('mold_num') or'<input type="text" name="mold_num" class="form-control">'|safe }}</td>
-                <td>加硫条码号<br><small>Barcode</small></td>
-                <td id="barcode">{{ data.get('barcode') or'<input type="text" name="barcode" class="form-control">'|safe }}</td>
-                <td>标准轮辋<br><small>Standard Rim</small></td>
-                <td id="rim_code">{{ data.get('rim_code') or'<input type="text" name="rim_code" class="form-control">'|safe }}</td>
-            </tr>
-            <tr>
-                <td>胎面批号<br><small>Tread Run</small></td>
-                <td id="tread_num">{{ data.get('tread_num') or'<input type="text" name="tread_num" class="form-control">'|safe }}</td>
-                <td>最大荷重<br><small>Max Load</small></td>
-                <td>{{ detail.get('load') }}kg</td>
-                <td>最大风压<br><small>Max Pressure</small></td>
-                <td>{{ detail.get('inflate') }}kpa</td>
-            </tr>
-        </table>
-        </div>
         <!-- 多份表单循环点开始 -->
         {# input 第一种类型宏 #}
         {% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
@@ -201,13 +76,74 @@
                 </td>
             {%- endif %}
         {%- endmacro %}
+        {# input 第四种类型宏 用于textarea#}
+        {% macro input_4(name,prefix,colspan=0,rowspan=0,type='text',class='form-control',cols=0,rows=0) -%}
+            {% if data.get(prefix + '_' + name) -%}
+                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+                    {{ data.get(prefix + '_' + name) }}
+                </td>
+            {% else %}
+                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+                    <textarea name="{{ prefix }}_{{ name }}" class="{{ class }}" cols="{{ cols }}" rows="{{ rows }}">
+                    </textarea>
+                </td>
+            {%- endif %}
+        {%- endmacro %}
 
         {% set LETTERS='ABCDEFG' %}
         {% for k,v in quantity.items() %}
+            {#/* 增加锚点 实现跳转 */#}
+            <a name="{{ k }}" id="{{ k }}" class="anchor"></a>
             {% for x in range(v) %}
             {% set a,b,c=x|safe,k,x+1 %}
             {% set x= a+'_'+b %}
+        <h3>外胎高速性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
         <div class="test-number">高速测试第{{ c }}份报表,测试条件:{{ k }}</div>
+        <table class="table table-bordered table-condensed table1">
+            <tr>
+                <td colspan="6">基础信息</td>
+            </tr>
+            <tr>
+                <td>标称尺度<br><small>Size</small></td>
+                <td>{{ detail.get('size') }}</td>
+                <td>委托编号<br><small>Request Number</small></td>
+                <td>{{ detail.get('req_num') }}</td>
+                <td>实验目的<br><small>Purpose</small></td>
+                <td>{{ detail.get('purpose') }}</td>
+            </tr>
+            <tr>
+                <td>商标/花纹代码<br><small>Pattern</small></td>
+                <td>{{ detail.get('brand') }}</td>
+                <td>DOT码/加硫机号<br><small>DOT Num.</small></td>
+                <td id="dot_num">{{ data.get('dot_num') or '<input type="text" name="dot_num" class="form-control">'|safe }}</td>
+                <td>组装时间<br><small>Assembly Time</small></td>
+                <td id="assembly_time">{{ data.get('assembly_time') or '<input type="text" name="assembly_time" class="datetime form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>花纹代号<br>Design Num.</td>
+                {{ input_1(name='pattern_code',prefix=x|safe) }}
+                <td>周期牌号<br><small>Week Number</small></td>
+                {{ input_1(name='dot_week',prefix=x|safe) }}
+                <td>完成时间<br><small>Finish Date</small></td>
+                {{ input_2(name='finish_time',prefix=x|safe) }}
+            </tr>
+            <tr>
+                <td>模具号<br><small>Mold</small></td>
+                {{ input_1(name='mold_num',prefix=x|safe) }}
+                <td>加硫条码号<br><small>Barcode</small></td>
+                {{ input_1(name='barcode',prefix=x|safe) }}
+                <td>标准轮辋<br><small>Standard Rim</small></td>
+                <td id="rim_code">{{ data.get('rim_code') or'<input type="text" name="rim_code" class="form-control">'|safe }}</td>
+            </tr>
+            <tr>
+                <td>胎面批号<br><small>Tread Run</small></td>
+                {{ input_1(name='tread_num',prefix=x|safe) }}
+                <td>最大荷重<br><small>Max Load</small></td>
+                <td>{{ detail.get('load') }}kg</td>
+                <td>最大风压<br><small>Max Pressure</small></td>
+                <td>{{ detail.get('inflate') }}kpa</td>
+            </tr>
+        </table>
         <table class="table table-bordered table-condensed table1">
                 <tr>
                     <td colspan="11">试验前尺寸</td>
@@ -315,9 +251,9 @@
             <table class="table table-bordered table-condensed table1">
             {% if database.get(k) %}
                 <tr>
-                    <td colspan="6">轮胎实验数据</td>
+                    <td colspan="7">轮胎实验数据</td>
                 </tr>
-                {% set td_header = ['STEP','TIME','LOAD','SPEED','MILE','TOTAL'] %}
+                {% set td_header = ['STEP','TIME','LOAD','SPEED','MILE','TOTAL','PRESSURE'] %}
                 <tr>
                 {% for value in td_header -%}
                     <td>{{ value }}</td>
@@ -331,6 +267,7 @@
                     <td>{{ database.get(k).get(j).get('speed') }}</td>
                     <td>{{ database.get(k).get(j).get('mile') }}</td>
                     <td>{{ database.get(k).get(j).get('total') }}</td>
+                    <td></td>
                     </tr>
                 {% endfor %}
             {% endif %}
@@ -405,7 +342,7 @@
                 </table>
             </div>
         </div>
-        <table class="table table-bordered table-condensed table1">
+        <table class="table table-bordered table-condensed table1 table-footer;">
             <tr>
                 <td colspan="2">分析注解<small>Anyalysis Comments</small></td>
             </tr>
@@ -414,15 +351,10 @@
                 <td><img src="" alt="2占位"></td>
             </tr>
         </table>
-        <!-- 多份表单循环点结束 -->
-            {% endfor %}
-        {% endfor %}
         <table class="table table-bordered">
             <tr>
                 <td rowspan="2">备注</td>
-                <td rowspan="2">
-                    {{ data.get('highspeed_remark') or '<textarea name="highspeed_remark" id="" cols="10" rows="4" class="form-control"></textarea>'|safe }}
-                </td>
+                {{ input_4(name="highspeed_remark",prefix=x|safe,cols=10,rows=4,rowspan=2) }}
                 <td>核定<br><small>Approval</small></td>
                 <td>审核<br><small>Aduditing</small></td>
                 <td>报告人<br><small>Report</small></td>
@@ -433,15 +365,10 @@
                 <td>Jim Ge</td>
             </tr>
         </table>
-        <input type="submit" class="btn btn-success" name="save" value="Save">
-        <div id="document_ref">QR-03-011-06</div>
-    </form>
-</div>
-<div class="copyright" id="copyright">
-    <div class="container-fluid">
-        <div>Cooper(Kunshan)Tire Co.,Ltd.</div>
-        <div>固铂(昆山)轮胎有限公司</div>
-        <table class="table" id="copyright_table">
+        <div id="document_ref">QR-03-011-06</div><div class="copyright" id="copyright">
+        <div>
+        <div style="text-align: center">Cooper(Kunshan)Tire Co.,Ltd.<br>固铂(昆山)轮胎有限公司</div>
+        <table class="table table-without-bordered" id="copyright_table">
             <tr>
                 <td>
                 <div>CONFIDENTIAL</div>
@@ -456,84 +383,13 @@
             </tr>
         </table>
     </div>
+        </div>
+        <!-- 多份表单循环点结束 -->
+            {% endfor %}
+        {% endfor %}
+    <input type="submit" class="btn btn-success" name="save" value="Save">
+    </form>
 </div>
-<script>
-    $(".datetime").datetimepicker({
-        format:'yyyy-mm-dd hh:ii',
-        //autoclose:true,//点选日期之后关闭控件
-        todayHighlight:true,
-        todayBtn:true,
-        maxView: "decade"
-    });
-    /*
-    双击修改td，保留原值
-     */
-    $("td").dblclick(function(){
-        //获取不到td的id值则取消逻辑
-        if ('undefined' == typeof($(this).attr('id'))){
-            alert('该单元格无法修改');
-            return false;
-        } else {
-            try {
-                var nodename = $(this).children()[0].nodeName;
-            } catch(e) {
-                var nodename = 'undefined';
-            };
-            if( nodename == 'INPUT' || $(this).attr('class') == 'avg1') {
-                /*
-                如果没有子节点那么就会出错，无法执行下一步的判断
-                td中如果嵌套了input也不提供修改,如果是avg1的机器计算的也不提供修改
-                知识点：1.jquery对象和原生js对象的转换 2.判断节点的方法
-                */
-                //避免干扰
-                //alert('该单元格已经嵌套INPUT,无法再次生成INPUT');
-                return false;
-            } else {
-                //若获取到id值传入构造的input中作为name
-                var td_id = $(this).attr('id');
-                //原值
-                var old_value = $(this)[0].innerText;
-                //原class
-                //console.log(td_id);
-                //console.log(old_value);
-                if(confirm('确定需要修改数据吗？')){
-                    if (td_id.indexOf('time') != -1){
-                    str = '<input type="text" class="form-control datetime" name="' +
-                    td_id + '" value="' + old_value + '">';
-                    } else {
-                        str = '<input type="text" class="form-control" name="' +
-                            td_id + '" value="' + old_value + '">';
-                    }
-                    //console.log(str);
-                    $(this).html(str);
-                }
-            }
-        }
-    });
-    /*
-    求平均值
-     */
-    $(".avg").bind("input propertychange oninput", function(){
-        $(".avg1").each(function(){
-            var x = $(this).siblings().children('input.avg');
-            var sum=0;
-            for(var i=0;i<6;i++){
-                try{
-                    sum += Number(x[i].value);
-                } catch(e) {
-                    //console.log(e);
-                    sum += 0;
-                };
-                console.log(sum);
-            };
-            if ($(this).children){
-                console.log('have no children');
-                $(this).html((sum/6).toFixed(2));
-            } else {
-                $(this).children().attr('value',(sum/6).toFixed(2));
-            }
-        });
-    })
-</script>
+<script type="text/javascript" src="/static/style.js"></script>
 </body>
 </html>
