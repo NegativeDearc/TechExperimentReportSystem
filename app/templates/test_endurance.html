@@ -14,27 +14,6 @@
     <link rel="stylesheet" href="/static/style.css">
     <script type="text/javascript" src="/static/style.js"></script>
 </head>
-<body>
-<!--这边可以通过jinja2模板继承重用-->
-<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <!--无论折叠与否都显示-->
-        <a class="navbar-brand" id="brand">技术部走行工单系统</a>
-    </div>
-    <!--折叠数据-->
-    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
-        <a href="{{ url_for('maintain') }}" class="btn">数据库维护</a>|
-        <a href="" class="btn">test2</a>|
-        <a href="" class="btn">test3</a>
-    </div>
-</nav>
-<!--重用结束-->
 {# input 第一种类型宏 #}
 {% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
     {% if data.get(prefix + '_' + name) -%}
@@ -60,7 +39,7 @@
     {%- endif %}
 {%- endmacro %}
 {# input 第三种类型宏,用于计算平均值#}
-{% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='',readonly=False)-%}
+{% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='avg',readonly=False)-%}
     {% if data.get(prefix + '_' + name) -%}
         <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}" class="{{ cls_td }}">
             {{ data.get(prefix + '_' + name) }}
@@ -88,8 +67,62 @@
         </td>
     {%- endif %}
 {%- endmacro %}
-
-
+{# input 第四种类型宏 用于textarea#}
+{% macro input_4(name,prefix,colspan=0,rowspan=0,type='text',class='form-control',cols=0,rows=0) -%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% else %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            <textarea name="{{ prefix }}_{{ name }}" class="{{ class }}" cols="{{ cols }}" rows="{{ rows }}">
+            </textarea>
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# select 宏命令 #}
+{% macro select(name,prefix,colspan=0,rowspan=0,type='text',class='form-control') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        {% if data.get(prefix + '_' + name) == 0|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            不合格
+            </td>
+        {% elif data.get(prefix + '_' + name) == 1|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            合格
+            </td>
+        {% endif %}
+    {% else %}
+        <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+        <select class="{{ class }}" name="{{ prefix }}_{{ name }}" style="width: auto;color: red;">
+            <option value="" selected></option>
+            <option value="1">合格</option>
+            <option value="0">不合格</option>
+        </select>
+        </td>
+    {%- endif %}
+{%- endmacro %}
+<body>
+<!--这边可以通过jinja2模板继承重用-->
+<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!--无论折叠与否都显示-->
+        <a class="navbar-brand" id="brand">技术部走行工单系统</a>
+    </div>
+    <!--折叠数据-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
+        <a href="{{ url_for('maintain') }}" class="btn">数据库维护</a>|
+        <a href="" class="btn">test2</a>|
+        <a href="" class="btn">test3</a>
+    </div>
+</nav>
+<!--重用结束-->
 <div class="container">
     <form action="" method="post">
         <div class="table">
@@ -178,14 +211,14 @@
                     <td>重量<br>Weight</td>
                     {{ input_1(name='dim_test_tire_weight',colspan=7,prefix=x|safe) }}
                     {{ input_1(name='dim_test_spec_weight',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='weight_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_weight_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
                     <td>外径<br>Diameter</td>
                     {{ input_1(name='dim_test_tire_out_dia',colspan=7,prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_spec_dia',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='outer_dia_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_dia_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
@@ -198,7 +231,7 @@
                     {{ input_3(name='dim_test_tire_overall_width_6',prefix=x|safe) }}
                     {{ input_3(name='dim_test_tire_overall_width_avg',prefix=x|safe,readonly=True,cls_td='avg1') }}
                     {{ input_1(name='dim_test_tire_overall_width_spec',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='overall_width_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_overall_width_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
@@ -211,15 +244,12 @@
                     {{ input_3(name='dim_test_tire_section_width_6',prefix=x|safe) }}
                     {{ input_3(name='dim_test_tire_section_width_avg',prefix=x|safe,readonly=True,cls_td='avg1') }}
                     {{ input_1(name='dim_test_tire_section_width_spec',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='section_width_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_section_width_gauge',prefix=x|safe)}}
                 </tr>
                 <tr>
                     <td colspan="5">尺寸测量判定<br>Judgement</td>
-                    <td colspan="6">
-                        <input type="radio" name="dim_judge">合格
-                        <input type="radio" name="dim_judge">不合格
-                    </td>
+                    {{ select(name='final_judge',prefix=x|safe,colspan="6") }}
                 </tr>
         </table>
         <table class="table table-bordered table-condensed table1">

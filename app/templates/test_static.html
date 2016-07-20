@@ -12,29 +12,7 @@
     <script src="/static/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
     <link rel="stylesheet" href="/static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/static/style.css">
-    <script type="text/javascript" src="/static/style.js"></script>
 </head>
-<body>
-<!--这边可以通过jinja2模板继承重用-->
-<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <!--无论折叠与否都显示-->
-        <a class="navbar-brand" id="brand">技术部走行工单系统</a>
-    </div>
-    <!--折叠数据-->
-    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
-        <a href="{{ url_for('maintain') }}" class="btn">数据库维护</a>|
-        <a href="" class="btn">test2</a>|
-        <a href="" class="btn">test3</a>
-    </div>
-</nav>
-<!--重用结束-->
 {# input 第一种类型宏 #}
 {% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
     {% if data.get(prefix + '_' + name) -%}
@@ -60,7 +38,7 @@
     {%- endif %}
 {%- endmacro %}
 {# input 第三种类型宏,用于计算平均值#}
-{% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='',readonly=False)-%}
+{% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='avg',readonly=False)-%}
     {% if data.get(prefix + '_' + name) -%}
         <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}" class="{{ cls_td }}">
             {{ data.get(prefix + '_' + name) }}
@@ -75,7 +53,49 @@
         </td>
     {%- endif %}
 {%- endmacro %}
-
+{# select 宏命令 #}
+{% macro select(name,prefix,colspan=0,rowspan=0,type='text',class='form-control') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        {% if data.get(prefix + '_' + name) == 0|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            不合格
+            </td>
+        {% elif data.get(prefix + '_' + name) == 1|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            合格
+            </td>
+        {% endif %}
+    {% else %}
+        <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+        <select class="{{ class }}" name="{{ prefix }}_{{ name }}" style="width: auto;color: red;">
+            <option value="" selected></option>
+            <option value="1">合格</option>
+            <option value="0">不合格</option>
+        </select>
+        </td>
+    {%- endif %}
+{%- endmacro %}
+<body>
+<!--这边可以通过jinja2模板继承重用-->
+<nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!--无论折叠与否都显示-->
+        <a class="navbar-brand" id="brand">技术部走行工单系统</a>
+    </div>
+    <!--折叠数据-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse" id="navbar1">
+        <a href="{{ url_for('maintain') }}" class="btn">数据库维护</a>|
+        <a href="" class="btn">test2</a>|
+        <a href="" class="btn">test3</a>
+    </div>
+</nav>
+<!--重用结束-->
 <div class="container">
 <h3>外胎静态性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
     <form action="" method="post">
@@ -157,14 +177,14 @@
                     <td>重量<br>Weight</td>
                     {{ input_1(name='dim_test_tire_weight',colspan=7,prefix='static') }}
                     {{ input_1(name='dim_test_tire_spec_weight',prefix='static') }}
-                    <td></td>
+                    {{ select(name='weight_judge',prefix='dim_test') }}
                     {{ input_1(name='dim_test_tire_weight_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td>外径<br>Diameter</td>
                     {{ input_1(name='dim_test_tire_out_dia',colspan=7,prefix='static') }}
                     {{ input_1(name='dim_test_tire_spec_dia',prefix='static') }}
-                    <td></td>
+                    {{ select(name='outer_dia_judge',prefix='dim_test') }}
                     {{ input_1(name='dim_test_tire_dia_gauge',prefix='static') }}
                 </tr>
                 <tr>
@@ -177,7 +197,7 @@
                     {{ input_3(name='dim_test_tire_overall_width_6',prefix='static') }}
                     {{ input_3(name='dim_test_tire_overall_width_avg',prefix='static',cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_overall_width_spec',prefix='static') }}
-                    <td></td>
+                    {{ select(name='overall_width_judge',prefix='dim_test') }}
                     {{ input_1(name='dim_test_tire_overall_width_gauge',prefix='static') }}
                 </tr>
                 <tr>
@@ -190,7 +210,7 @@
                     {{ input_3(name='dim_test_tire_section_width_6',prefix='static') }}
                     {{ input_3(name='dim_test_tire_section_width_6',prefix='static',cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_section_width_spec',prefix='static') }}
-                    <td></td>
+                    {{ select(name='section_width_judge',prefix='dim_test') }}
                     {{ input_1(name='dim_test_tire_section_width_gauge',prefix='static') }}
                 </tr>
                 <tr>
@@ -203,7 +223,7 @@
                     {{ input_3(name='dim_test_tire_section_nonskid_6',prefix='static') }}
                     {{ input_3(name='dim_test_tire_section_nonskid_avg',prefix='static',cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_section_nonskid_spec',prefix='static') }}
-                    <td></td>
+                    {{ select(name='nonskid_judge',prefix='dim_test') }}
                     {{ input_1(name='dim_test_tire_section_nonskid_gauge',prefix='static') }}
                 </tr>
                 <tr>
@@ -216,15 +236,12 @@
                     {{ input_3(name='dim_test_tire_section_twi_6',prefix='static') }}
                     {{ input_3(name='dim_test_tire_section_twi_avg',prefix='static',cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_section_twi_spec',prefix='static') }}
-                    <td></td>
+                    {{ select(name='twi_judge',prefix='dim_test') }}
                     {{ input_1(name='dim_test_tire_section_twi_gauge',prefix='static') }}
                 </tr>
                 <tr>
                     <td colspan="5">尺寸测量判定<br>Judgement</td>
-                    <td colspan="6">
-                        <input type="radio" name="dim_judge">合格
-                        <input type="radio" name="dim_judge">不合格
-                    </td>
+                    {{ select(name='dim_test_judge',prefix='dim_test',colspan="6") }}
                 </tr>
             </table>
         {% endif %}
@@ -279,11 +296,11 @@
             </tr>
             <tr>
                 <td colspan="3">轮胎状态<br>Tire Status</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                {{ select(name='tire_judge_1',prefix='unseat') }}
+                {{ select(name='tire_judge_2',prefix='unseat') }}
+                {{ select(name='tire_judge_3',prefix='unseat') }}
+                {{ select(name='tire_judge_4',prefix='unseat') }}
+                {{ select(name='tire_judge_5',prefix='unseat') }}
             </tr>
             <tr>
                 <td>测试最大值<br>Max load</td>
@@ -291,10 +308,7 @@
                 <td>合格率%<br>Yield</td>
                 <td></td>
                 <td>判定<br>Judgement</td>
-                <td colspan="3">
-                    <input type="radio" name="unseat_judge">合格
-                    <input type="radio" name="unseat_judge">不合格
-                </td>
+                 {{ select(name='final_judge',prefix='unseat',colspan=3) }}
             </tr>
             </table>
         {% endif %}
@@ -363,11 +377,11 @@
             </tr>
             <tr>
                 <td colspan="3">轮胎状态<br>Tire Status</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                {{ select(name='tire_judge_1',prefix='plunger') }}
+                {{ select(name='tire_judge_2',prefix='plunger') }}
+                {{ select(name='tire_judge_3',prefix='plunger') }}
+                {{ select(name='tire_judge_4',prefix='plunger') }}
+                {{ select(name='tire_judge_5',prefix='plunger') }}
             </tr>
             <tr>
                 <td>最大能量<br>Max Energy</td>
@@ -375,10 +389,7 @@
                 <td>合格率 %<br>Yeild</td>
                 <td></td>
                 <td>判定<br>Judgement</td>
-                <td colspan="3">
-                    <input type="radio" name="plunger_judge">合格
-                    <input type="radio" name="plunger_judge">不合格
-                </td>
+                {{ select(name='finnal_judge',prefix='plunger') }}
             </tr>
             <tr>
                 <td rowspan="2">备注<br>Remark</td>
@@ -422,5 +433,6 @@
         </table>
     </div>
 </div>
+<script type="text/javascript" src="/static/style.js"></script>
 </body>
 </html>

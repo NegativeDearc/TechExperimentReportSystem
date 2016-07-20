@@ -35,6 +35,7 @@ window.onload=function(){
             } else {
                 //若获取到id值传入构造的input中作为name
                 var td_id = $(this).attr('id');
+                var td_cls = $(this).attr('class');
                 //原值
                 var old_value = $(this)[0].innerText;
                 //原class
@@ -46,7 +47,7 @@ window.onload=function(){
                     td_id + '" value="' + old_value + '">';
                     } else {
                         str = '<input type="text" class="form-control" name="' +
-                            td_id + '" value="' + old_value + '">';
+                        td_id + '" value="' + old_value + '">';
                     }
                     //console.log(str);
                     $(this).html(str);
@@ -60,22 +61,23 @@ window.onload=function(){
     $(".avg").bind("input propertychange oninput", function(){
         $(".avg1").each(function(){
             var x = $(this).siblings().children('input.avg');
+            var y = $(this).siblings('td.avg');
+            //console.log(y);
             var sum=0;
             for(var i=0;i<6;i++){
-                try{
-                    sum += Number(x[i].value);
-                } catch(e) {
-                    //console.log(e);
-                    sum += 0;
-                };
-                console.log(sum);
-            };
-            if ($(this).children){
-                //console.log('have no children');
-                $(this).html((sum/6).toFixed(2)); //??
-            } else {
-                $(this).children().attr('value',(sum/6).toFixed(2));
+                var z = 0;
+                z = Number(y[i].innerHTML);
+                if (isNaN(z)) {
+                    z =  Number($(x[i]).val());//js对象转化为jquery对象,使用$符号
+                    if (isNaN(z)) {
+                        z = Number($(y[i]).children('input').val())
+                    }
+                }
+                //console.log(z);
+                sum += z;
             }
+            $(this).html('<input type="text" class="form-control" name="' + $(this).attr('id') + '" value="' +
+                (sum/6).toFixed(2) +'" readonly'+'>'); //??
         });
     });
-}
+};

@@ -12,6 +12,81 @@
     <link rel="stylesheet" href="/static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/static/style.css">
 </head>
+{# input 第一种类型宏 #}
+{% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% else %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# input 第二种类型宏 差别在于多了时间类datetime #}
+{% macro input_2(name,prefix,colspan,rowspan=0,type='text',class='form-control datetime') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% else %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# input 第三种类型宏,用于计算平均值#}
+{% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='avg',readonly=False)-%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}" class="{{ cls_td }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% elif not readonly %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
+        </td>
+    {% elif readonly %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
+            <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}" readonly>
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# input 第四种类型宏 用于textarea#}
+{% macro input_4(name,prefix,colspan=0,rowspan=0,type='text',class='form-control',cols=0,rows=0) -%}
+    {% if data.get(prefix + '_' + name) -%}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            {{ data.get(prefix + '_' + name) }}
+        </td>
+    {% else %}
+        <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
+            <textarea name="{{ prefix }}_{{ name }}" class="{{ class }}" cols="{{ cols }}" rows="{{ rows }}">
+            </textarea>
+        </td>
+    {%- endif %}
+{%- endmacro %}
+{# select 宏命令 #}
+{% macro select(name,prefix,colspan=0,rowspan=0,type='text',class='form-control') -%}
+    {% if data.get(prefix + '_' + name) -%}
+        {% if data.get(prefix + '_' + name) == 0|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            不合格
+            </td>
+        {% elif data.get(prefix + '_' + name) == 1|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            合格
+            </td>
+        {% endif %}
+    {% else %}
+        <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+        <select class="{{ class }}" name="{{ prefix }}_{{ name }}" style="width: auto;color: red;">
+            <option value="" selected></option>
+            <option value="1">合格</option>
+            <option value="0">不合格</option>
+        </select>
+        </td>
+    {%- endif %}
+{%- endmacro %}
 <body>
 <!--这边可以通过jinja2模板继承重用-->
 <nav class="navbar navbar-default navbar-static-top nav-top" role="navigation">
@@ -36,60 +111,6 @@
 <div class="container">
     <form action="" method="post">
         <!-- 多份表单循环点开始 -->
-        {# input 第一种类型宏 #}
-        {% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
-            {% if data.get(prefix + '_' + name) -%}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
-                    {{ data.get(prefix + '_' + name) }}
-                </td>
-            {% else %}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}">
-                    <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
-                </td>
-            {%- endif %}
-        {%- endmacro %}
-        {# input 第二种类型宏 差别在于多了时间类datetime #}
-        {% macro input_2(name,prefix,colspan,rowspan=0,type='text',class='form-control datetime') -%}
-            {% if data.get(prefix + '_' + name) -%}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
-                    {{ data.get(prefix + '_' + name) }}
-                </td>
-            {% else %}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}">
-                    <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
-                </td>
-            {%- endif %}
-        {%- endmacro %}
-        {# input 第三种类型宏,用于计算平均值#}
-        {% macro input_3(name,prefix,colspan,rowspan=0,type='text',class='form-control avg',cls_td='',readonly=False)-%}
-            {% if data.get(prefix + '_' + name) -%}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}" class="{{ cls_td }}">
-                    {{ data.get(prefix + '_' + name) }}
-                </td>
-            {% elif not readonly %}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
-                    <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}">
-                </td>
-            {% elif readonly %}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" class="{{ cls_td }}">
-                    <input type="{{ type }}" name="{{ prefix }}_{{ name }}" class="{{ class }}" readonly>
-                </td>
-            {%- endif %}
-        {%- endmacro %}
-        {# input 第四种类型宏 用于textarea#}
-        {% macro input_4(name,prefix,colspan=0,rowspan=0,type='text',class='form-control',cols=0,rows=0) -%}
-            {% if data.get(prefix + '_' + name) -%}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
-                    {{ data.get(prefix + '_' + name) }}
-                </td>
-            {% else %}
-                <td colspan="{{ colspan }}" id="{{ prefix }}_{{ name }}" rowspan="{{ rowspan }}">
-                    <textarea name="{{ prefix }}_{{ name }}" class="{{ class }}" cols="{{ cols }}" rows="{{ rows }}">
-                    </textarea>
-                </td>
-            {%- endif %}
-        {%- endmacro %}
-
         {% set LETTERS='ABCDEFG' %}
         {% for k,v in quantity.items() %}
             {#/* 增加锚点 实现跳转 */#}
@@ -115,9 +136,9 @@
                 <td>商标/花纹代码<br><small>Pattern</small></td>
                 <td>{{ detail.get('brand') }}</td>
                 <td>DOT码/加硫机号<br><small>DOT Num.</small></td>
-                <td id="dot_num">{{ data.get('dot_num') or '<input type="text" name="dot_num" class="form-control">'|safe }}</td>
+                {{ input_1(name='dot_num',prefix=x|safe) }}
                 <td>组装时间<br><small>Assembly Time</small></td>
-                <td id="assembly_time">{{ data.get('assembly_time') or '<input type="text" name="assembly_time" class="datetime form-control">'|safe }}</td>
+                {{ input_2(name='assembly_time',prefix=x|safe) }}
             </tr>
             <tr>
                 <td>花纹代号<br>Design Num.</td>
@@ -133,7 +154,7 @@
                 <td>加硫条码号<br><small>Barcode</small></td>
                 {{ input_1(name='barcode',prefix=x|safe) }}
                 <td>标准轮辋<br><small>Standard Rim</small></td>
-                <td id="rim_code">{{ data.get('rim_code') or'<input type="text" name="rim_code" class="form-control">'|safe }}</td>
+                {{ input_1(name='rim_code',prefix=x|safe) }}
             </tr>
             <tr>
                 <td>胎面批号<br><small>Tread Run</small></td>
@@ -175,14 +196,14 @@
                     <td>重量<br>Weight</td>
                     {{ input_1(name='dim_test_tire_weight',prefix=x|safe,colspan=7) }}
                     {{ input_1(name='dim_test_spec_weight',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='weight_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_weight_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
                     <td>外径<br>Diameter</td>
                     {{ input_1(name='dim_test_tire_out_dia',prefix=x|safe,colspan=7) }}
                     {{ input_1(name='dim_test_tire_spec_dia',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='out_dia_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_dia_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
@@ -195,7 +216,7 @@
                     {{ input_3(name='dim_test_tire_overall_width_6',prefix=x|safe) }}
                     {{ input_3(name='dim_test_tire_overall_width_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_overall_width_spec',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='overall_width_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_overall_width_gauge',prefix=x|safe) }}
                 </tr>
                 <tr>
@@ -208,15 +229,12 @@
                     {{ input_3(name='dim_test_tire_section_width_6',prefix=x|safe) }}
                     {{ input_3(name='dim_test_tire_section_width_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
                     {{ input_1(name='dim_test_tire_section_width_spec',prefix=x|safe) }}
-                    <td></td>
+                    {{ select(name='section_width_judge',prefix=x|safe) }}
                     {{ input_1(name='dim_test_tire_section_width_gauge',prefix=x|safe)}}
                 </tr>
                 <tr>
                     <td colspan="5">尺寸测量判定<br>Judgement</td>
-                    <td colspan="6">
-                        <input type="radio" name="dim_judge">合格
-                        <input type="radio" name="dim_judge">不合格
-                    </td>
+                    {{ select(name='dim_judge',prefix=x|safe,colspan=6) }}
                 </tr>
         </table>
         <table class="table table-bordered table-condensed table1">
