@@ -64,6 +64,18 @@
             <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
             合格
             </td>
+        {% elif data.get(prefix + '_' + name) == 3|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            /
+            </td>
+        {% elif data.get(prefix + '_' + name) == 4|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            OK
+            </td>
+        {% elif data.get(prefix + '_' + name) == 5|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            Rim Touch
+            </td>
         {% endif %}
     {% else %}
         <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
@@ -71,6 +83,9 @@
             <option value="" selected></option>
             <option value="1">合格</option>
             <option value="0">不合格</option>
+            <option value="3">/</option>
+            <option value="4">OK</option>
+            <option value="5">Rim Touch</option>
         </select>
         </td>
     {%- endif %}
@@ -134,7 +149,7 @@
                 <td>加硫条码号<br><small>Barcode</small></td>
                 {{ input_1(name='barcode',prefix='static') }}
                 <td>标准轮辋<br><small>Standard Rim</small></td>
-                {{ input_1(name='rim_code',prefix='static') }}
+                {{ input_1(name='rim_code',prefix='static',class="form-control rim-code") }}
             </tr>
             <tr>
                 <td>胎面批号<br><small>Tread Run</small></td>
@@ -154,7 +169,7 @@
                     <td>测试风压<br>Pressure</td>
                     {{ input_1(name='dim_test_inflate',colspan=2,prefix='static') }}
                     <td>测试轮辋<br>Rim</td>
-                    {{ input_1(name='dim_test_rim_code',colspan=2,prefix='static') }}
+                    {{ input_1(name='dim_test_rim_code',colspan=2,prefix='static',class="form-control rim-code") }}
                     <td>测试时间<br>Time</td>
                     {{ input_2(name='dim_test_finish_time',colspan=2,prefix='static') }}
                     <td >技术员<br>Tech.</td>
@@ -262,7 +277,7 @@
                 <td>测试风压<br>Pressure</td>
                 {{ input_1(name='unseat_test_pressure',prefix='static') }}
                 <td>测试轮辋<br>Rim</td>
-                {{ input_1(name='unseat_test_dim',prefix='static') }}
+                {{ input_1(name='unseat_test_dim',prefix='static',class="form-control rim-code") }}
                 <td>测试时间<br>Time</td>
                 {{ input_2(name='unseat_test_time',prefix='static') }}
                 <td>技术员<br>Tech.</td>
@@ -327,7 +342,7 @@
                 <td>测试风压<br>Pressure</td>
                 {{ input_1(name='plunger_test_pressure',prefix='static') }}
                 <td>测试轮辋<br>Dim</td>
-                {{ input_1(name='plunger_test_dim',prefix='static') }}
+                {{ input_1(name='plunger_test_dim',prefix='static',class="form-control rim-code") }}
                 <td>测试时间<br>Time</td>
                 {{ input_2(name='plunger_test_time',prefix='static') }}
                 <td>技术员<br>Tech.</td>
@@ -389,7 +404,7 @@
                 <td>合格率 %<br>Yeild</td>
                 <td></td>
                 <td>判定<br>Judgement</td>
-                {{ select(name='finnal_judge',prefix='plunger') }}
+                {{ select(name='finnal_judge',prefix='plunger',colspan="3") }}
             </tr>
             <tr>
                 <td rowspan="2">备注<br>Remark</td>
@@ -400,7 +415,7 @@
             </tr>
             <tr>
                 <td></td>
-                <td></td>
+                <td>{{ detail.get('proposer') }}</td>
                 <td>Jim Ge</td>
             </tr>
             </table>

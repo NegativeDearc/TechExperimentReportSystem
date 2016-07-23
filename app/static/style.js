@@ -80,4 +80,10 @@ window.onload=function(){
                 (sum/6).toFixed(2) +'" readonly'+'>'); //??
         });
     });
+    /*
+    相同轮辋代码只用输入一次
+     */
+    $('.rim-code').bind('input propertychange oninput',function(){
+        $('.rim-code').val($(this).val());
+    });
 };

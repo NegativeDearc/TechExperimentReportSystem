@@ -91,6 +91,18 @@
             <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
             合格
             </td>
+        {% elif data.get(prefix + '_' + name) == 3|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            /
+            </td>
+        {% elif data.get(prefix + '_' + name) == 4|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            OK
+            </td>
+        {% elif data.get(prefix + '_' + name) == 5|safe %}
+            <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
+            Rim Touch
+            </td>
         {% endif %}
     {% else %}
         <td colspan="{{ colspan }}" rowspan="{{ rowspan }}">
@@ -98,6 +110,9 @@
             <option value="" selected></option>
             <option value="1">合格</option>
             <option value="0">不合格</option>
+            <option value="3">/</option>
+            <option value="4">OK</option>
+            <option value="5">Rim Touch</option>
         </select>
         </td>
     {%- endif %}
@@ -169,7 +184,7 @@
                 <td>加硫条码号<br><small>Barcode</small></td>
                 {{ input_1(name='barcode',prefix=x|safe) }}
                 <td>标准轮辋<br><small>Standard Rim</small></td>
-                {{ input_1(name='rim_code',prefix=x|safe) }}
+                {{ input_1(name='rim_code',prefix=x|safe,class="form-control rim-code") }}
             </tr>
             <tr>
                 <td>胎面批号<br><small>Tread Run</small></td>
@@ -188,7 +203,7 @@
                     <td>测试风压<br>Pressure</td>
                     {{ input_1(name='dim_test_inflate',colspan=2,prefix=x|safe) }}
                     <td>测试轮辋<br>Rim</td>
-                    {{ input_1(name='dim_test_rim_code',colspan=2,prefix=x|safe) }}
+                    {{ input_1(name='dim_test_rim_code',colspan=2,prefix=x|safe,class="form-control rim-code") }}
                     <td>测试时间<br>Time</td>
                     {{ input_2(name='dim_test_finish_time',colspan=2,prefix=x|safe) }}
                     <td >技术员<br>Tech.</td>
@@ -260,7 +275,7 @@
                 <td>测试风压<br>Pressure</td>
                 <td></td>
                 <td>测试轮辋<br>Rim</td>
-                <td></td>
+                {{ input_1(name="dim_code_after_test",prefix=x|safe,class="form-control rim-code") }}
                 <td>测试时间<br>Test Date</td>
                 {{ input_2(name='endurance_test_date',prefix=x|safe)}}
                 <td>环境温度<br>Temperature</td>
@@ -355,10 +370,7 @@
                     </tr>
                     <tr>
                         <td colspan="3">结果判定<br><small>Result Judgement</small></td>
-                        <td colspan="5">
-                            <input type="radio" name="endurance_test_result">合格
-                            <input type="radio" name="endurance_test_result">不合格
-                        </td>
+                        {{ select(name='after_test_judge',prefix=x|safe,colspan="5") }}
                     </tr>
                     <tr>
                         <td colspan="2">分析代码<br><small>Analysis Code</small></td>
@@ -375,8 +387,19 @@
                 </table>
             </div>
         </div>
-
-
+        <table class="table table-bordered table-condensed table1 table-footer">
+            <tr>
+                <td colspan="2">分析注解<small>Anyalysis Comments</small></td>
+            </tr>
+            <tr>
+                <td><img src="" alt="1占位"></td>
+                <td><img src="" alt="2占位"></td>
+            </tr>
+            <tr>
+                <td>Comment注释</td>
+                {{ input_4(name="analsys_comments",prefix=x|safe) }}
+            </tr>
+        </table>
         <table class="table table-bordered">
     <tr>
         <td rowspan="2">备注</td>
@@ -387,7 +410,7 @@
     </tr>
     <tr>
         <td></td>
-        <td></td>
+        <td>{{ detail.get('proposer') }}</td>
         <td>Jim Ge</td>
     </tr>
 </table>

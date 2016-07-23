@@ -29,14 +29,15 @@ def static_test_request_detail(uuid):
                           requestForms.brand,
                           requestForms.purpose,
                           requestForms.load,
-                          requestForms.inflate).\
+                          requestForms.inflate,
+                          requestForms.name).\
         filter(requestForms.uuid == uuid).\
         all()
     # 生成字典
     df = list(chain(*df))
     d  = {}
 
-    for item in zip(['size','req_num','brand','purpose','load','inflate'],df):
+    for item in zip(['size','req_num','brand','purpose','load','inflate','proposer'],df):
         d.update({item[0]:item[1]})
 
     return d
