@@ -15,12 +15,13 @@ class Config(object):
     ALLOWED_UPLOAD_FILE = set(['csv'])
 
     if platform.startswith('win'):
-        DATABASE_PATH = basedir + '\\app\models\CTLSS_BONUS_DB_TEST'
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + basedir + '\\app\models\CTLSS_BONUS_DB_TEST'
+        DATABASE_PATH = basedir + '\\app\models\TIRE_TEST_DB'
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + basedir + '\\app\models\TIRE_TEST_DB'
         TEST_TEMPLATE_FILES = basedir + "\\app\\static\\files\\"
     else:
-        DATABASE_PATH = basedir + '/app/models/CTLSS_BONUS_DB_TEST'
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + basedir + '/app/models/CTLSS_BONUS_DB_TEST'
+        DATABASE_PATH = basedir + '/app/models/TIRE_TEST_DB'
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + basedir + '/app/models/TIRE_TEST_DB'
+        TEST_TEMPLATE_FILES = basedir + "/app/static/files/"
 
 
 class DevelopmentConfig(Config):

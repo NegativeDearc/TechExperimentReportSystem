@@ -81,9 +81,18 @@ def developer():
     return render_template('developer.html', res=res)
 
 
-@app.route('/tester')
+@app.route('/tester',methods=['GET','POST'])
 def tester():
     data = testInfo().test_info()
+    if request.method == "POST":
+        for v in request.form.keys():
+            if v.startswith('sub'):
+                _ , uuid , test_content = tuple(v.split('#'))
+        db.session.query(testContent).\
+            filter(testContent.uuid==uuid,testContent.test_content==test_content).\
+            update({'if_test':True})
+        db.session.commit()
+        return redirect(url_for('tester'))
     return render_template('tester.html', data=data)
 
 
@@ -245,3 +254,45 @@ def get_endurance_db():
         return jsonify({ref: x})
     except Exception:
         return abort(500)
+
+
+# 周向破坏形式
+@app.route('/api/v1.0/pic/condition/circum/')
+def get_condition_circum_pic():
+    # 配合JS插件ddslick使用，需提供指定格式的JSON数据
+    b = {}
+    path = app.config['TEST_TEMPLATE_FILES'] + '/circum/'
+    if os.listdir(path):
+        a = 0
+        for k in os.listdir(path):
+            a += 1
+            data = {
+                'text':k,
+                'value': a,
+                'selected':'false',
+                'description': k,
+                'imageSrc':'/static/files/circum/' + k
+            }
+            b.update({a:data})
+        return jsonify(b)
+
+
+# 断宽破坏形式
+@app.route('/api/v1.0/pic/condition/section/')
+def get_condition_section_pic():
+    # 配合JS插件ddslick使用，需提供指定格式的JSON数据
+    b = {}
+    path = app.config['TEST_TEMPLATE_FILES'] + '/section/'
+    if os.listdir(path):
+        a = 0
+        for k in os.listdir(path):
+            a += 1
+            data = {
+                'text':k,
+                'value': a,
+                'selected':'false',
+                'description': k,
+                'imageSrc':'/static/files/section/' + k
+            }
+            b.update({a:data})
+        return jsonify(b)

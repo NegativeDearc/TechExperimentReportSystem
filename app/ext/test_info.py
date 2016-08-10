@@ -15,7 +15,6 @@ class testInfo(object):
             all()
 
         self.req_number = [x.req_num for x in __number_set]
-        print self.req_number
 
     def test_info(self):
         d = []
@@ -34,7 +33,7 @@ class testInfo(object):
                 if n.test_type == 'B':
                     url = 'report/endurance/' + n.uuid + '/#' + n.test_content
                 if n.test_type == 'C':
-                    url = '/report/highspeed/' + n.uuid + '/#' + n.test_content
+                    url = '/report/highspeed/' + n.uuid
 
                 v.append([m.name,
                           m.date,

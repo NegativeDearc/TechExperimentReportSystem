@@ -9,11 +9,9 @@
 <link rel="stylesheet" href="/static/bootstrap.min.css">
 <script src="/static/jquery.min.js"></script>
 <script src="/static/bootstrap.min.js"></script>
-<link rel="stylesheet" href="/static/table-expandable/bootstrap-table-expandable.css">
-<script src="/static/table-expandable/bootstrap-table-expandable.js"></script>
 
 <style>
-    title,button,a,.info,p {
+    title,button,a,.info,p,input {
         font-family:"Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑","STHeiti","MingLiu";
         font-weight:bold;
     }
@@ -63,6 +61,7 @@
     <div class="table-responsive">
     <table class="table">
     {% for x in data %}
+        {% if x.content %}
         <tr class="info">
         <td>项目编号</td>
         <td>申请人</td>
@@ -74,6 +73,7 @@
         <td>是否已经测试？</td>
         <td>动作按钮</td>
         </tr>
+        {% endif %}
         {% for v in x.content %}
             <tr>
             <td>{{ x.id }}</td>
@@ -81,10 +81,12 @@
             <td>{{ vv }}</td>
             {% endfor %}
             <td style="display: none">{{ v[-1] }}</td>
+            <form action="" method="post">
             <td>
                 <a class="btn btn-primary target-url" href="{{ v[-2]|safe }}" target="_blank">前往处理</a>
-                <a class="btn btn-warning" target="_blank">标记为已处理</a>
+                <input type="submit" class="btn btn-warning" name="sub#{{ v[-1] }}#{{ v[3] }}" value="标记为已处理" onclick="return alert_info()">
             </td>
+            </form>
             </tr>
         {% endfor %}
     {% endfor %}
@@ -98,5 +100,15 @@
     </div>
     {% endif %}
 </div>
+<script>
+    alert_info = function(){
+        var info = confirm('将测试项目标记为已完成，会使数据不再显示，确认已经检查报表并打印完毕！');
+        if (info == false){
+            return false
+        } else {
+            return true
+        }
+    };
+</script>
 </body>
 </html>

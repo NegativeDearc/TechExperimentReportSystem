@@ -2,6 +2,8 @@
  * Created by SXChen on 2016/7/15.
  */
 window.onload=function(){
+    var $SCRIPT_ROOT =  window.location.host;
+
     $(".datetime").datetimepicker({
     format:'yyyy-mm-dd hh:ii',
     //autoclose:true,//点选日期之后关闭控件
@@ -86,4 +88,73 @@ window.onload=function(){
     $('.rim-code').bind('input propertychange oninput',function(){
         $('.rim-code').val($(this).val());
     });
+    /*
+    ajax获取图片
+     */
+    $(function(){
+        $.ajax({
+            url: 'http://' + $SCRIPT_ROOT + '/api/v1.0/pic/condition/circum/',
+            method:'GET',
+            data:{},
+            dataType:"json",
+            processData:false,
+            success:function(html){
+                str = '';
+                var ddData = [];
+                for(k in html){
+                    ddData.push(html[k])
+                }
+                //console.log(ddData);
+                //构造<option></option>
+                for(k in ddData){
+                    //console.log(ddData[k]);
+                    str += '<option value="' + ddData[k].value + ' data-imagescr="' + ddData[k].imageSrc +
+                        '"' + ' data-description="' + ddData[k].description +
+                        '"' +
+                        '>' + ddData[k].text + '</option>'
+                }
+                //console.log(str);
+
+                $('.load_pic_circum').ddslick({
+                    data:ddData,
+                    width:558,   //指定px之后打印会出现偏差
+                    selectText: "选择周向破坏的图形",
+                    imagePosition:"right",
+                    onSelected: function(selectedData){
+                        //callback function: do something with selectedData;
+                        //console.log(selectedData.original.context);
+                        //console.log(selectedData.selectedData.imageSrc);
+
+                    }
+                });
+            }
+        });
+    });
+
+    $(function(){
+        $.ajax({
+            url: 'http://' + $SCRIPT_ROOT + '/api/v1.0/pic/condition/section/',
+            method:'GET',
+            data:{},
+            dataType:"json",
+            processData:false,
+            success:function(html){
+                var ddData = [];
+                for(k in html){
+                    ddData.push(html[k])
+                }
+                //console.log(ddData);
+                $('.load_pic_section').ddslick({
+                    data:ddData,
+                    width:558,
+                    selectText: "选择断面破坏的图形",
+                    imagePosition:"right",
+                    onSelected: function(selectedData){
+                        //callback function: do something with selectedData;
+                        //console.log(selectedData);
+                    }
+                });
+            }
+        });
+    })
 };

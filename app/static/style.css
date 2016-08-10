@@ -10,6 +10,12 @@
     nav {display: none;}
     input.btn {display: none;}
     .test-number {display: none;}
+    .dd-selected-text{display: none;}
+    .dd-selected-description{display: none;}
+    .dd-pointer{display: none;}
+    #myTab {display: none}
+    .navbar-fixed-bottom {display: none}
+    .info{display: none}
     /*细节调整*/
     table,h3 {
         text-align: center;

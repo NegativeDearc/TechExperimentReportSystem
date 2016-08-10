@@ -615,6 +615,12 @@ class Pressure(db.Model):
     tire_type_LTR_N   = db.Column(db.Integer)
 
 
+class SpecInfo(db.Model):
+    '''记录SPEC基本静态信息的表'''
+    __tablename__ = 'SPEC_INFO'
+    id = db.Column(db.Integer,primary_key=True)
+
+
 class ReportDetail(db.Model):
     """
     存储测试记录的表
