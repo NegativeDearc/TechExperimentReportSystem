@@ -164,4 +164,33 @@ window.onload=function(){
         $("form").submit();
         return true;
     };
+    /*
+    按照屏幕宽度控制组件位置
+     */
+    var resize_layer = function(){
+        console.log('resizing...');
+        var screen_width = $(window).outerWidth();//获取屏幕宽度
+        var container_width = $(".container").outerWidth();//获取container宽度
+        var offset_width = (screen_width - container_width)/4;
+        $(".rightLayer").css({
+            "display":"block",
+            "right":offset_width + "px",
+            "position":"fixed",
+            "bottom":"0px"
+        });
+        $(".leftLayer").css({
+            "display":"block",
+            "left":offset_width + "px",
+            "position":"fixed",
+            "bottom":"0px"
+        });
+    };
+
+    resize_layer();
+
+    $(window).resize(function(){
+        console.log("正在调整窗口大小!");
+        $(".rightLayer,.leftLayer").removeAttr('style');
+        resize_layer();
+    });
 };
