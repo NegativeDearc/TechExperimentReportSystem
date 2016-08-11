@@ -14,8 +14,10 @@
     .dd-selected-description{display: none;}
     .dd-pointer{display: none;}
     #myTab {display: none}
-    .navbar-fixed-bottom {display: none}
+    .nav {display: none}
     .info{display: none}
+    .rightLayer{display: none!important;}
+    .leftLayer{display: none!important;}
     /*细节调整*/
     table,h3 {
         text-align: center;

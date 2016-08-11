@@ -12,6 +12,7 @@
     <script src="/static/dropdown/jquery.ddslick.min.js"></script>
     <link rel="stylesheet" href="/static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/static/style.css">
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 </head>
 {# input 第一种类型宏 #}
 {% macro input_1(name,prefix,colspan,rowspan=0,type='text',class='form-control') -%}
@@ -125,31 +126,43 @@
 </nav>
 <!--重用结束-->
 <div class="container">
+
+    <ul class="nav nav-tabs" id="myTab">
+    {% for k,v in quantity.items() %}
+        <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+                <i class="fa fa-paperclip"></i>
+                {{ k }}
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                {% for x in range(v) %}
+                <li>
+                    <a href="#{{ k }}-{{ x+1 }}" tabindex="-1" data-toggle="tab">
+                    <i class="fa fa-chevron-right"></i>
+                    第{{ x+1 }}份报表
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+    </ul>
+
     <form action="" method="post">
         <!-- 多份表单循环点开始 -->
         {% set LETTERS='ABCDEFG' %}
 
-        <ul class="nav nav-tabs" id="myTab">
-        {% for k,v in quantity.items() %}
-            <li class="dropdown">
-                <a href="#" data-toggle="dropdown" class="dropdown-toggle">{{ k }}<b class="caret"></b></a>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
-                    {% for x in range(v) %}
-                    <li><a href="#{{ k }}-{{ x+1 }}" tabindex="-1" data-toggle="tab">第{{ x+1 }}份报表</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-        </ul>
-
         <div id="myTabContent" class="tab-content">
+        {% set index = [] %}
         {% for k,v in quantity.items() %}
             {#/* 增加锚点 实现跳转 */#}
+            {# jinja2 多重嵌套作用域不可共享，所以不能使用累加的方式记数字  #}
             <a name="{{ k }}" id="{{ k }}" class="anchor"></a>
             {% for x in range(v) %}
+                {% set _ = index.append(1)  %}
                 {% set a,b,c=x|safe,k,x+1 %}
-                {% set x= a+'_'+b %}
-
+                {% set xx= a+'_'+b %}
                 <div class="tab-pane fade in" id="{{ k }}-{{ c }}">
                 <h3>外胎高速性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
                 <div class="test-number">高速测试第{{ c }}份报表,测试条件:{{ k }}</div>
@@ -161,7 +174,7 @@
                         <td>标称尺度<br><small>Size</small></td>
                         <td>{{ detail.get('size') }}</td>
                         <td>委托编号<br><small>Request Number</small></td>
-                        <td>{{ detail.get('req_num') }}</td>
+                        <td>{{ detail.get('req_num') }}-2-{{ index|length }}</td>
                         <td>实验目的<br><small>Purpose</small></td>
                         <td>{{ detail.get('purpose') }}</td>
                     </tr>
@@ -169,29 +182,29 @@
                         <td>商标/花纹代码<br><small>Pattern</small></td>
                         <td>{{ detail.get('brand') }}</td>
                         <td>DOT码/加硫机号<br><small>DOT Num.</small></td>
-                        {{ input_1(name='dot_num',prefix=x|safe) }}
+                        {{ input_1(name='dot_num',prefix=xx|safe) }}
                         <td>组装时间<br><small>Assembly Time</small></td>
-                        {{ input_2(name='assembly_time',prefix=x|safe) }}
+                        {{ input_2(name='assembly_time',prefix=xx|safe) }}
                     </tr>
                     <tr>
                         <td>花纹代号<br>Design Num.</td>
-                        {{ input_1(name='pattern_code',prefix=x|safe) }}
+                        {{ input_1(name='pattern_code',prefix=xx|safe) }}
                         <td>周期牌号<br><small>Week Number</small></td>
-                        {{ input_1(name='dot_week',prefix=x|safe) }}
+                        {{ input_1(name='dot_week',prefix=xx|safe) }}
                         <td>完成时间<br><small>Finish Date</small></td>
-                        {{ input_2(name='finish_time',prefix=x|safe) }}
+                        {{ input_2(name='finish_time',prefix=xx|safe) }}
                     </tr>
                     <tr>
                         <td>模具号<br><small>Mold</small></td>
-                        {{ input_1(name='mold_num',prefix=x|safe) }}
+                        {{ input_1(name='mold_num',prefix=xx|safe) }}
                         <td>加硫条码号<br><small>Barcode</small></td>
-                        {{ input_1(name='barcode',prefix=x|safe) }}
+                        {{ input_1(name='barcode',prefix=xx|safe) }}
                         <td>标准轮辋<br><small>Standard Rim</small></td>
-                        {{ input_1(name='rim_code',prefix=x|safe,class="form-control rim-code") }}
+                        {{ input_1(name='rim_code',prefix=xx|safe,class="form-control rim-code") }}
                     </tr>
                     <tr>
                         <td>胎面批号<br><small>Tread Run</small></td>
-                        {{ input_1(name='tread_num',prefix=x|safe) }}
+                        {{ input_1(name='tread_num',prefix=xx|safe) }}
                         <td>最大荷重<br><small>Max Load</small></td>
                         <td>{{ detail.get('load') }}kg</td>
                         <td>最大风压<br><small>Max Pressure</small></td>
@@ -204,13 +217,13 @@
                         </tr>
                         <tr>
                             <td>测试风压<br>Pressure</td>
-                            {{ input_1(name='dim_test_inflate',prefix=x|safe,colspan=2) }}
+                            {{ input_1(name='dim_test_inflate',prefix=xx|safe,colspan=2) }}
                             <td>测试轮辋<br>Rim</td>
-                            {{ input_1(name='dim_test_rim_code',prefix=x|safe,colspan=2,class="form-control rim-code") }}
+                            {{ input_1(name='dim_test_rim_code',prefix=xx|safe,colspan=2,class="form-control rim-code") }}
                             <td>测试时间<br>Time</td>
-                            {{ input_2(name='dim_test_finish_time',prefix=x|safe,colspan=2) }}
+                            {{ input_2(name='dim_test_finish_time',prefix=xx|safe,colspan=2) }}
                             <td >技术员<br>Tech.</td>
-                            {{ input_1(name='dim_test_operator',prefix=x|safe) }}
+                            {{ input_1(name='dim_test_operator',prefix=xx|safe) }}
                         </tr>
                         <tr>
                             <td>项目<br>Item</td>
@@ -227,47 +240,47 @@
                         </tr>
                         <tr>
                             <td>重量<br>Weight</td>
-                            {{ input_1(name='dim_test_tire_weight',prefix=x|safe,colspan=7) }}
-                            {{ input_1(name='dim_test_spec_weight',prefix=x|safe) }}
-                            {{ select(name='weight_judge',prefix=x|safe) }}
-                            {{ input_1(name='dim_test_weight_gauge',prefix=x|safe) }}
+                            {{ input_1(name='dim_test_tire_weight',prefix=xx|safe,colspan=7) }}
+                            {{ input_1(name='dim_test_spec_weight',prefix=xx|safe) }}
+                            {{ select(name='weight_judge',prefix=xx|safe) }}
+                            {{ input_1(name='dim_test_weight_gauge',prefix=xxx|safe) }}
                         </tr>
                         <tr>
                             <td>外径<br>Diameter</td>
-                            {{ input_1(name='dim_test_tire_out_dia',prefix=x|safe,colspan=7) }}
-                            {{ input_1(name='dim_test_tire_spec_dia',prefix=x|safe) }}
-                            {{ select(name='out_dia_judge',prefix=x|safe) }}
-                            {{ input_1(name='dim_test_tire_dia_gauge',prefix=x|safe) }}
+                            {{ input_1(name='dim_test_tire_out_dia',prefix=xx|safe,colspan=7) }}
+                            {{ input_1(name='dim_test_tire_spec_dia',prefix=xx|safe) }}
+                            {{ select(name='out_dia_judge',prefix=xx|safe) }}
+                            {{ input_1(name='dim_test_tire_dia_gauge',prefix=xx|safe) }}
                         </tr>
                         <tr>
                             <td>总宽<br>Overall Width</td>
-                            {{ input_3(name='dim_test_tire_overall_width_1',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_overall_width_2',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_overall_width_3',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_overall_width_4',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_overall_width_5',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_overall_width_6',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_overall_width_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
-                            {{ input_1(name='dim_test_tire_overall_width_spec',prefix=x|safe) }}
-                            {{ select(name='overall_width_judge',prefix=x|safe) }}
-                            {{ input_1(name='dim_test_tire_overall_width_gauge',prefix=x|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_1',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_2',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_3',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_4',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_5',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_6',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_overall_width_avg',prefix=xx|safe,cls_td='avg1',readonly=True) }}
+                            {{ input_1(name='dim_test_tire_overall_width_spec',prefix=xx|safe) }}
+                            {{ select(name='overall_width_judge',prefix=xx|safe) }}
+                            {{ input_1(name='dim_test_tire_overall_width_gauge',prefix=xx|safe) }}
                         </tr>
                         <tr>
                             <td>断宽<br>Section Width</td>
-                            {{ input_3(name='dim_test_tire_section_width_1',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_section_width_2',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_section_width_3',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_section_width_4',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_section_width_5',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_section_width_6',prefix=x|safe) }}
-                            {{ input_3(name='dim_test_tire_section_width_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
-                            {{ input_1(name='dim_test_tire_section_width_spec',prefix=x|safe) }}
-                            {{ select(name='section_width_judge',prefix=x|safe) }}
-                            {{ input_1(name='dim_test_tire_section_width_gauge',prefix=x|safe)}}
+                            {{ input_3(name='dim_test_tire_section_width_1',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_section_width_2',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_section_width_3',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_section_width_4',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_section_width_5',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_section_width_6',prefix=xx|safe) }}
+                            {{ input_3(name='dim_test_tire_section_width_avg',prefix=xx|safe,cls_td='avg1',readonly=True) }}
+                            {{ input_1(name='dim_test_tire_section_width_spec',prefix=xx|safe) }}
+                            {{ select(name='section_width_judge',prefix=xx|safe) }}
+                            {{ input_1(name='dim_test_tire_section_width_gauge',prefix=xx|safe)}}
                         </tr>
                         <tr>
                             <td colspan="5">尺寸测量判定<br>Judgement</td>
-                            {{ select(name='dim_judge',prefix=x|safe,colspan=6) }}
+                            {{ select(name='dim_judge',prefix=xx|safe,colspan=6) }}
                         </tr>
                 </table>
                 <table class="table table-bordered table-condensed table1">
@@ -278,11 +291,11 @@
                         <td>测试风压<br>Pressure</td>
                         <td></td>
                         <td>测试轮辋<br>Rim</td>
-                        {{ input_1(name='highspeed_test_rim_code',prefix=x|safe,class="form-control rim-code") }}
+                        {{ input_1(name='highspeed_test_rim_code',prefix=xx|safe,class="form-control rim-code") }}
                         <td>测试时间<br>Test Date</td>
-                        {{ input_2(name='highspeed_test_date',prefix=x|safe)}}
+                        {{ input_2(name='highspeed_test_date',prefix=xx|safe)}}
                         <td>环境温度<br>Temperature</td>
-                        {{ input_1(name='highspeed_test_temp',prefix=x|safe)}}
+                        {{ input_1(name='highspeed_test_temp',prefix=xx|safe)}}
                     </tr>
                     <tr>
                         <td>参考标准<br>Reference</td>
@@ -290,9 +303,9 @@
                         <td>合格条件<br>Cert.Min.</td>
                         <td></td>
                         <td>设备编号<br>Equipment Id</td>
-                        {{ input_1(name='highspeed_test_equipment_id',prefix=x|safe) }}
+                        {{ input_1(name='highspeed_test_equipment_id',prefix=xx|safe) }}
                         <td>技术员<br>Tech.</td>
-                        {{ input_1(name='highspeed_test_operator',prefix=x|safe) }}
+                        {{ input_1(name='highspeed_test_operator',prefix=xx|safe) }}
                     </tr>
                 </table>
                 <!-- 两表组合 -->
@@ -341,51 +354,51 @@
                             </tr>
                             <tr>
                                 <td>外径<br><small>Dia.</small></td>
-                                {{ input_1(name='highspeed_after_test_dia',prefix=x|safe,colspan=7) }}
+                                {{ input_1(name='highspeed_after_test_dia',prefix=xx|safe,colspan=7) }}
                             </tr>
                             <tr>
                                 <td>总宽<br><small>Overall Width</small></td>
-                                {{ input_3(name='highspeed_after_test_ow_1',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_2',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_3',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_4',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_5',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_6',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
+                                {{ input_3(name='highspeed_after_test_ow_1',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_2',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_3',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_4',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_5',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_6',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_avg',prefix=xx|safe,cls_td='avg1',readonly=True) }}
                             </tr>
                             <tr>
                                 <td>断宽<br><small>Section Width</small></td>
-                                {{ input_3(name='highspeed_after_test_sw_1',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_2',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_3',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_4',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_5',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_6',prefix=x|safe) }}
-                                {{ input_3(name='highspeed_after_test_ow_avg',prefix=x|safe,cls_td='avg1',readonly=True) }}
+                                {{ input_3(name='highspeed_after_test_sw_1',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_2',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_3',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_4',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_5',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_6',prefix=xx|safe) }}
+                                {{ input_3(name='highspeed_after_test_ow_avg',prefix=xx|safe,cls_td='avg1',readonly=True) }}
                             </tr>
                             <tr>
                                 <td>总阶段<br><small>Total Phases</small></td>
-                                {{ input_1(name='highspeed_total_phases',prefix=x|safe,type='number') }}
+                                {{ input_1(name='highspeed_total_phases',prefix=xx|safe,type='number') }}
                                 <td>最后阶段里程<br><small>Last Phases km</small></td>
-                                {{ input_1(name='highspeed_last_phases',prefix=x|safe,colspan=2) }}
+                                {{ input_1(name='highspeed_last_phases',prefix=xx|safe,colspan=2) }}
                                 <td>总里程(千米)<br><small>Total km</small></td>
-                                {{ input_1(name='highspeed_total_km',prefix=x|safe,colspan=2) }}
+                                {{ input_1(name='highspeed_total_km',prefix=xx|safe,colspan=2) }}
                             </tr>
                             <tr>
                                 <td colspan="3">结果判定<br><small>Result Judgement</small></td>
-                                {{ select(name='after_test_judge',prefix=x|safe,colspan=5) }}
+                                {{ select(name='after_test_judge',prefix=xx|safe,colspan=5) }}
                             </tr>
                             <tr>
                                 <td colspan="2">分析代码<br><small>Analysis Code</small></td>
-                                {{ input_1(name='highspeed_analy_code',prefix=x|safe,colspan=2) }}
+                                {{ input_1(name='highspeed_analy_code',prefix=xx|safe,colspan=2) }}
                                 <td colspan="2">二期分析代码<br><small>Secondary Analysis Code</small></td>
-                                {{ input_1(name='highspeed_analy_second_code',prefix=x|safe,colspan=2) }}
+                                {{ input_1(name='highspeed_analy_second_code',prefix=xx|safe,colspan=2) }}
                             </tr>
                             <tr>
                                 <td colspan="2">分析位置<br><small>Analy Location</small></td>
-                                {{ input_1(name='highspeed_analy_location',prefix=x|safe,colspan=2) }}
+                                {{ input_1(name='highspeed_analy_location',prefix=xx|safe,colspan=2) }}
                                 <td colspan="2">二期分析位置<br><small>Secondary Analy Location</small></td>
-                                {{ input_1(name='highspeed_analy_second_location',prefix=x|safe,colspan=2) }}
+                                {{ input_1(name='highspeed_analy_second_location',prefix=xx|safe,colspan=2) }}
                             </tr>
                         </table>
                     </div>
@@ -401,13 +414,13 @@
                     </tr>
                     <tr>
                         <td>Comment注释</td>
-                        {{ input_4(name="analsys_comments",prefix=x|safe) }}
+                        {{ input_4(name="analsys_comments",prefix=xx|safe) }}
                     </tr>
                 </table>
                 <table class="table table-bordered">
                     <tr>
                         <td rowspan="2">备注</td>
-                        {{ input_4(name="highspeed_remark",prefix=x|safe,cols=10,rows=4,rowspan=2) }}
+                        {{ input_4(name="highspeed_remark",prefix=xx|safe,cols=10,rows=4,rowspan=2) }}
                         <td>核定<br><small>Approval</small></td>
                         <td>审核<br><small>Aduditing</small></td>
                         <td>报告人<br><small>Report</small></td>
@@ -443,11 +456,20 @@
         {% endfor %}
         <!-- tab pane 结束 -->
          </div>
-    <input type="submit" class="btn btn-success" name="save" value="保存">
+        <div class="leftLayer" style="display: block; left: 150px; position: fixed; bottom: 0px;">
+            <a class="btn" onclick="click_submit()">
+                <i class="fa fa-save fa-4x"></i>
+            </a>
+            <input type="submit" class="btn btn-success" name="save" value="Save" style="display: none">
+        </div>
     </form>
 </div>
 
-<div class="nav navbar-fixed-bottom"><a href="#">返回顶部</a></div>
+<div class="rightLayer" style="display: block; right: 150px; position: fixed; bottom: 0px;">
+    <a href="#" class="btn">
+        <i class="fa fa-arrow-circle-up fa-4x"></i>
+    </a>
+</div>
 <script type="text/javascript" src="/static/style.js"></script>
 </body>
 </html>

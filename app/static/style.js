@@ -156,5 +156,12 @@ window.onload=function(){
                 });
             }
         });
-    })
+    });
+    /*
+    点击图标保存
+     */
+    click_submit = function(){
+        $("form").submit();
+        return true;
+    };
 };

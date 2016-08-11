@@ -31,7 +31,7 @@ class testInfo(object):
                 if n.test_type == 'A':
                     url = '/report/static/' + n.uuid + '/'
                 if n.test_type == 'B':
-                    url = 'report/endurance/' + n.uuid + '/#' + n.test_content
+                    url = 'report/endurance/' + n.uuid
                 if n.test_type == 'C':
                     url = '/report/highspeed/' + n.uuid
 

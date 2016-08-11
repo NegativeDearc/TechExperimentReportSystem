@@ -27,7 +27,6 @@ def generate_csrf_token():
         session['_crsf_token'] = os.urandom(15).encode('hex')
     return session['_crsf_token']
 
-
 app.jinja_env.globals['crsf_token'] = generate_csrf_token
 
 

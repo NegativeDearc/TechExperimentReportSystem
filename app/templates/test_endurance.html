@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="/static/bootstrap.min.css">
     <script src="/static/jquery.min.js"></script>
     <script src="/static/bootstrap.min.js"></script>
-
+    <script src="/static/dropdown/jquery.ddslick.min.js"></script>
     <script src="/static/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
     <link rel="stylesheet" href="/static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/static/style.css">
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <script type="text/javascript" src="/static/style.js"></script>
 </head>
 {# input 第一种类型宏 #}
@@ -139,8 +140,32 @@
 </nav>
 <!--重用结束-->
 <div class="container">
+
+    <ul class="nav nav-tabs" id="myTab">
+        {% for k,v in quantity.items() %}
+            <li class="dropdown">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+                    <i class="fa fa-paperclip"></i>
+                    {{ k }}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                    {% for x in range(v) %}
+                    <li>
+                        <a href="#{{ k }}-{{ x+1 }}" tabindex="-1" data-toggle="tab">
+                        <i class="fa fa-chevron-right"></i>
+                        第{{ x+1 }}份报表
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+
     <form action="" method="post">
-        <div class="table">
+        <div id="myTabContent" class="tab-content">
+
         {% set LETTERS='ABCDEFG' %}
         {% for k,v in quantity.items() %}
             {#/* 增加锚点 实现跳转 */#}
@@ -148,9 +173,11 @@
             {% for x in range(v) %}
             {% set a,b,c=x|safe,k,x+1 %}
             {% set x= a+'_'+b %}
-        <h3>外胎耐久性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
-        <div class="test-number">耐久测试第{{ c }}份报表,测试条件:{{ k }}</div>
-        <table class="table table-bordered table-condensed table1">
+        <div class="tab-pane fade in" id="{{ k }}-{{ c }}">
+            <h3>外胎耐久性能试验报告<br><small>TIRE WHEEL TEST PROPERTY TEST REPORT</small></h3>
+            <div class="test-number">耐久测试第{{ c }}份报表,测试条件:{{ k }}</div>
+
+            <table class="table table-bordered table-condensed table1">
             <tr>
                 <td colspan="6">基础信息</td>
             </tr>
@@ -158,7 +185,7 @@
                 <td>标称尺度<br><small>Size</small></td>
                 <td>{{ detail.get('size') }}</td>
                 <td>委托编号<br><small>Request Number</small></td>
-                <td>{{ detail.get('req_num') }}</td>
+                <td>{{ detail.get('req_num') }}-</td>
                 <td>实验目的<br><small>Purpose</small></td>
                 <td>{{ detail.get('purpose') }}</td>
             </tr>
@@ -195,7 +222,8 @@
                 <td>{{ detail.get('inflate') }}kpa</td>
             </tr>
         </table>
-        <table class="table table-bordered table-condensed table1">
+
+            <table class="table table-bordered table-condensed table1">
                 <tr>
                     <td colspan="11">试验前尺寸</td>
                 </tr>
@@ -267,34 +295,35 @@
                     {{ select(name='final_judge',prefix=x|safe,colspan="6") }}
                 </tr>
         </table>
-        <table class="table table-bordered table-condensed table1">
-            <tr>
-                <td colspan="8">试验后轮胎状态分析</td>
-            </tr>
-            <tr>
-                <td>测试风压<br>Pressure</td>
-                <td></td>
-                <td>测试轮辋<br>Rim</td>
-                {{ input_1(name="dim_code_after_test",prefix=x|safe,class="form-control rim-code") }}
-                <td>测试时间<br>Test Date</td>
-                {{ input_2(name='endurance_test_date',prefix=x|safe)}}
-                <td>环境温度<br>Temperature</td>
-                {{ input_1(name='endurance_test_temp',prefix=x|safe)}}
-            </tr>
-            <tr>
-                <td>参考标准<br>Reference</td>
-                <td>{{ k }}</td>
-                <td>合格条件<br>Cert.Min.</td>
-                <td></td>
-                <td>设备编号<br>Equipment Id</td>
-                {{ input_1(name='endurance_test_equipment_id',prefix=x|safe) }}
-                <td>技术员<br>Tech.</td>
-                {{ input_1(name='endurance_test_operator',prefix=x|safe) }}
-            </tr>
-        </table>
 
-        <div class="row">
-            <div class="col-md-6">
+            <table class="table table-bordered table-condensed table1">
+                <tr>
+                    <td colspan="8">试验后轮胎状态分析</td>
+                </tr>
+                <tr>
+                    <td>测试风压<br>Pressure</td>
+                    <td></td>
+                    <td>测试轮辋<br>Rim</td>
+                    {{ input_1(name="dim_code_after_test",prefix=x|safe,class="form-control rim-code") }}
+                    <td>测试时间<br>Test Date</td>
+                    {{ input_2(name='endurance_test_date',prefix=x|safe)}}
+                    <td>环境温度<br>Temperature</td>
+                    {{ input_1(name='endurance_test_temp',prefix=x|safe)}}
+                </tr>
+                <tr>
+                    <td>参考标准<br>Reference</td>
+                    <td>{{ k }}</td>
+                    <td>合格条件<br>Cert.Min.</td>
+                    <td></td>
+                    <td>设备编号<br>Equipment Id</td>
+                    {{ input_1(name='endurance_test_equipment_id',prefix=x|safe) }}
+                    <td>技术员<br>Tech.</td>
+                    {{ input_1(name='endurance_test_operator',prefix=x|safe) }}
+                </tr>
+            </table>
+
+            <div class="row">
+                <div class="col-md-6">
             <!-- 耐久数据表 -->
             <table class="table table-bordered table-condensed table1">
             {% if database %}
@@ -321,7 +350,7 @@
             {% endif %}
             </table>
             </div>
-            <div class="col-md-6">
+                <div class="col-md-6">
                 <table class="table table-bordered table-condensed table1">
                     <tr>
                         <td colspan="8">试验后轮胎状态</td>
@@ -386,61 +415,74 @@
                     </tr>
                 </table>
             </div>
-        </div>
-        <table class="table table-bordered table-condensed table1 table-footer">
-            <tr>
-                <td colspan="2">分析注解<small>Anyalysis Comments</small></td>
-            </tr>
-            <tr>
-                <td><img src="" alt="1占位"></td>
-                <td><img src="" alt="2占位"></td>
-            </tr>
-            <tr>
-                <td>Comment注释</td>
-                {{ input_4(name="analsys_comments",prefix=x|safe) }}
-            </tr>
-        </table>
-        <table class="table table-bordered">
-    <tr>
-        <td rowspan="2">备注</td>
-        {{ input_4(name="endurance_remark",prefix=x|safe,cols=10,rows=4,rowspan=2) }}
-        <td>核定<br><small>Approval</small></td>
-        <td>审核<br><small>Aduditing</small></td>
-        <td>报告人<br><small>Report</small></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>{{ detail.get('proposer') }}</td>
-        <td>Jim Ge</td>
-    </tr>
-</table>
-        <div id="document_ref">QR-03-011-06</div>
-        <div class="copyright" id="copyright">
-<div>
-<div>Cooper(Kunshan)Tire Co.,Ltd.<br>固铂(昆山)轮胎有限公司</div>
-<table class="table" id="copyright_table">
-    <tr>
-        <td>
-        <div>CONFIDENTIAL</div>
-        <div>COMPETIVE COMMERICAL INFORMATION</div>
-        <div>Access limited to authorized personnel|Copyright@Unpublished</div>
-        </td>
-        <td>
-        <div>机密的</div>
-        <div>有竞争力的商业信息</div>
-        <div>仅限授权人员访问|版权所有@尚未发表</div>
-        </td>
-    </tr>
-</table>
-</div>
-</div>
+            </div>
 
+            <table class="table table-bordered table-condensed table1 table-footer">
+                <tr>
+                    <td colspan="2">分析注解<small>Anyalysis Comments</small></td>
+                </tr>
+                <tr>
+                    <td><select class="load_pic_circum"></select></td>
+                    <td><div class="load_pic_section"></div></td>
+                </tr>
+                <tr>
+                    <td>Comment注释</td>
+                    {{ input_4(name="analsys_comments",prefix=x|safe) }}
+                </tr>
+            </table>
+
+            <table class="table table-bordered">
+                <tr>
+                    <td rowspan="2">备注</td>
+                    {{ input_4(name="endurance_remark",prefix=x|safe,cols=10,rows=4,rowspan=2) }}
+                    <td>核定<br><small>Approval</small></td>
+                    <td>审核<br><small>Aduditing</small></td>
+                    <td>报告人<br><small>Report</small></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>{{ detail.get('proposer') }}</td>
+                    <td>Jim Ge</td>
+                </tr>
+            </table>
+            <!-- 隐藏信息 -->
+            <div id="document_ref">QR-03-011-06</div>
+            <div class="copyright" id="copyright">
+            <div>Cooper(Kunshan)Tire Co.,Ltd.<br>固铂(昆山)轮胎有限公司</div>
+            <table class="table" id="copyright_table">
+                <tr>
+                    <td>
+                    <div>CONFIDENTIAL</div>
+                    <div>COMPETIVE COMMERICAL INFORMATION</div>
+                    <div>Access limited to authorized personnel|Copyright@Unpublished</div>
+                    </td>
+                    <td>
+                    <div>机密的</div>
+                    <div>有竞争力的商业信息</div>
+                    <div>仅限授权人员访问|版权所有@尚未发表</div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+            <!-- -->
+        </div>
+            <!--表单结束位置-->
             {% endfor %}
         {% endfor %}
-
-        <input type="submit" class="btn btn-success" name="save" value="Save">
+        </div><!--tab content -->
+        <div class="leftLayer" style="display: block; left: 150px; position: fixed; bottom: 0px;">
+            <a class="btn" onclick="click_submit()">
+                <i class="fa fa-save fa-4x"></i>
+            </a>
+            <input type="submit" class="btn btn-success" name="save" value="Save" style="display: none">
         </div>
     </form>
+</div><!--container-->
+
+<div class="rightLayer" style="display: block; right: 150px; position: fixed; bottom: 0px;">
+    <a href="#" class="btn">
+        <i class="fa fa-arrow-circle-up fa-4x"></i>
+    </a>
 </div>
 </body>
 </html>
