@@ -167,10 +167,12 @@
         <div id="myTabContent" class="tab-content">
 
         {% set LETTERS='ABCDEFG' %}
+        {% set index = [] %}
         {% for k,v in quantity.items() %}
             {#/* 增加锚点 实现跳转 */#}
             <a name="{{ k }}" id="{{ k }}" class="anchor"></a>
             {% for x in range(v) %}
+            {% set _ = index.append(1) %}
             {% set a,b,c=x|safe,k,x+1 %}
             {% set x= a+'_'+b %}
         <div class="tab-pane fade in" id="{{ k }}-{{ c }}">
@@ -185,7 +187,7 @@
                 <td>标称尺度<br><small>Size</small></td>
                 <td>{{ detail.get('size') }}</td>
                 <td>委托编号<br><small>Request Number</small></td>
-                <td>{{ detail.get('req_num') }}-</td>
+                <td>{{ detail.get('req_num') }}-3-{{ index|length }}</td>
                 <td>实验目的<br><small>Purpose</small></td>
                 <td>{{ detail.get('purpose') }}</td>
             </tr>

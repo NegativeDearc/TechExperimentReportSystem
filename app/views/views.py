@@ -295,3 +295,9 @@ def get_condition_section_pic():
             }
             b.update({a:data})
         return jsonify(b)
+
+
+# 获取指定SPEC重量,外径,总宽,断宽,数据来自EXCEL
+@app.route('/api/v1.0/spec_info/')
+def get_spec_info():
+    pass
